@@ -81,9 +81,9 @@
     position: absolute;
     width: 92px;
     height: 92px;
-    background-size: 80%;
-    background-position: center;
-    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: all .15s ease-out;
 }
 
