@@ -5,7 +5,7 @@
 ## ❗️ ATTENTION ❗️
 This is a package that is currently in active development.
 
-![example](https://github.com/skilldill/rechess/blob/master/blob/ChessBoard.png?raw=true)
+<img src="https://github.com/skilldill/rechess/blob/master/blob/ChessBoard.png?raw=true" width="300px" height="300px">
 
 ## Install
 
