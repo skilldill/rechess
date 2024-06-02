@@ -47,6 +47,7 @@ export const App = () => {
 ```
 
 ## Designer
+[LinkedIn: Tatiana Utbanova](https://www.linkedin.com/in/tatiana-utbanova-6415b8271/)
 
 ## License
 
