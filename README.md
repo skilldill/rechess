@@ -1,30 +1,53 @@
 # rechess
 
-> for chess apps
-
 [![NPM](https://img.shields.io/npm/v/rechess.svg)](https://www.npmjs.com/package/rechess) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
+## ❗️ ATTENTION ❗️
+This is a package that is currently in active development.
+
+![example](https://github.com/skilldill/rechess/blob/master/blob/ChessBoard.png?raw=true)
 
 ## Install
 
 ```bash
-npm install --save rechess
+npm install rechess
+```
+
+or
+
+```bash
+yarn add rechess
 ```
 
 ## Usage
-
 ```tsx
-import React, { Component } from 'react'
+import React from 'react';
+import { ChessBoard } from 'rechess'; // ChessBoard is a base component of rechess
 
-import MyComponent from 'rechess'
-import 'rechess/dist/index.css'
+import 'rechess/dist/index.css'; // required import css for ChessBoard
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
+export const App = () => {
+
+  // This handler for example 
+  const handleChangePosition = (data) => {
+    console.log(data);
   }
+
+  return (
+    <div>
+      <ChessBoard 
+        FEN="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        onChange={handleChangePosition}
+        color="white"
+        reversed={reversed} // For black
+      />
+    </div>
+  );
 }
 ```
 
+## Designer
+
 ## License
 
-MIT © [skilldill](https://github.com/skilldill)
+MIT © [](https://github.com/)
