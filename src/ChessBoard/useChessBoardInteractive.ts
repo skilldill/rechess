@@ -1,7 +1,8 @@
 import { Cell, CellPos, Figure, FigureColor, JSChessEngine, MoveData, stateToFEN } from "../JSChessEngine";
 import { useState } from "react"
 import { checkIsPossibleMove, checkPositionsHas, hasCheck } from "./utils";
-import { ChangeMove } from "./models";
+import { ArrowCoords, ChangeMove } from "./models";
+import { DEFAULT_CELL_SIZE } from "./constants";
 
 type UseChessBoardInteractiveProps = {
   onChange: (moveData: MoveData) => void;
@@ -27,13 +28,17 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   const [clickedFigure, setClickedFigure] = useState<Figure>();
   const [clickPossibleMoves, setClickPossibleMoves] = useState<CellPos[]>([]);
 
+  const [startArrowCoord, setStartArrowCoord] = useState<CellPos>([-1, -1]);
+  const [arrowsCoords, setArrowsCoords] = useState<ArrowCoords[]>([]);
+
   const clearFromPos = () => setFromPos([-1, -1]);
   const clearGrabbingPos = () => setGrabbingPos([-1, -1]);
   const clearPossibleMoves = () => setPossibleMoves([]);
   const clearClickPossibleMoves = () => setClickPossibleMoves([]);
   const toggleCurrentColor = () => setCurrentColor((prevColor) => prevColor === 'white' ? 'black' : 'white');
   const clearMarkedCells = () => setMarkedCells([]);
-  const clearClickedPos = () => setClickedPos([-1, -1 ]);
+  const clearClickedPos = () => setClickedPos([-1, -1]);
+  const clearArrows = () => setArrowsCoords([]);
 
   const cleanAllForFigure = () => {
     setHoldedFigure(undefined);
@@ -226,16 +231,32 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   }
 
   const handleGrabEnd = (cellPos: CellPos, withTransition = false) => {
-    if (fromPos[0] === -1) return;
-    if (!holdedFigure) return;
-    if (possibleMoves.length === 0) return;
+    if (fromPos[0] === -1) {
+      clearGrabbingPos();
+      return;
+    }
+
+    if (!holdedFigure) {
+      return;
+    }
+
+    if (possibleMoves.length === 0) {
+      clearGrabbingPos();
+      return;
+    }
     
     const foundPosInPossible = checkIsPossibleMove(possibleMoves, cellPos);
 
-    if (!foundPosInPossible) return;
+    if (!foundPosInPossible) {
+      clearGrabbingPos();
+      return;
+    }
     
     const { moveData, attackedPos } = moveFigure(fromPos, cellPos, holdedFigure);
-    if (!moveData) return;
+    if (!moveData) {
+      clearGrabbingPos();
+      return;
+    }
 
     onChange(moveData);
 
@@ -266,6 +287,7 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
 
   const handleClick = (cellPos: CellPos) => {
     clearMarkedCells();
+    clearArrows();
 
     if (clickedPos[0] === -1) {
       selectClickFrom(cellPos);
@@ -300,16 +322,48 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     return hasCheck(cell, currentColor, linesWithCheck);
   }
 
+  const startRenderArrow = (pos: CellPos) => {
+    const startPos: CellPos = [
+      (pos[0] + 1) * DEFAULT_CELL_SIZE - DEFAULT_CELL_SIZE / 2 - 10,
+      (pos[1] + 1) * DEFAULT_CELL_SIZE - DEFAULT_CELL_SIZE / 2,
+    ];
+
+    setStartArrowCoord(startPos);
+  }
+
+  const endRenderArrow = ([x, y]: CellPos) => {
+    if (startArrowCoord[0] === -1) return;
+
+    setArrowsCoords((arrows) => {
+      const copiedArrows = [...arrows];
+
+      return [
+        ...copiedArrows, 
+        { 
+          start: [...startArrowCoord], 
+          end: [
+            (x * DEFAULT_CELL_SIZE) + (DEFAULT_CELL_SIZE / 2 - 10), 
+            (y * DEFAULT_CELL_SIZE) + (DEFAULT_CELL_SIZE / 2),
+          ],
+        }
+      ];
+    });
+
+    setStartArrowCoord([-1, -1]);
+  }
+
   return {
     fromPos,
     newMove,
     markedCells,
     grabbingPos,
     actualState,
+    arrowsCoords,
     initialState,
     holdedFigure,
     possibleMoves,
     linesWithCheck,
+    startArrowCoord,
 
     markCell,
     setNewMove,
@@ -317,11 +371,13 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     clearFromPos,
     handleGrabEnd,
     handleGrabbing,
+    endRenderArrow,
     setActualState,
     setCurrentColor,
     selectClickFrom,
     selectHoverFrom,
     setInitialState,
+    startRenderArrow,
     reverseChessBoard,
     getHasCheckByCellPos,
   }

@@ -7,6 +7,7 @@ import { ChessBoardControlLayout } from "./ChessBoardControlLayout";
 import { useChessBoardInteractive } from "./useChessBoardInteractive";
 import { ChessBoardInteractiveLayout } from "./ChessBoardInteractiveLayout";
 import { ChangeMove } from "./models";
+import { ArrowLayout } from "./ArrowLayout";
 
 type ChessBoardProps = {
     FEN: string;
@@ -27,9 +28,12 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         possibleMoves,
         newMove,
         markedCells,
+        arrowsCoords,
+        startArrowCoord,
 
         setActualState,
         selectClickFrom,
+        startRenderArrow,
         selectHoverFrom,
         handleGrabbing,
         handleGrabEnd,
@@ -40,6 +44,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         setNewMove,
         markCell,
         getHasCheckByCellPos,
+        endRenderArrow,
     } = useChessBoardInteractive({ onChange });
 
     useEffect(() => {
@@ -73,10 +78,17 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
                 markedCells={markedCells}
                 onHasCheck={getHasCheckByCellPos}
             />
+            <ArrowLayout 
+                arrowsCoords={arrowsCoords}
+                startArrowCoord={startArrowCoord}
+                grabbingPos={grabbingPos}
+            />
             <ChessBoardControlLayout
                 onClick={handleClick}
                 onGrabStart={selectHoverFrom}
+                onGrabStartRight={startRenderArrow}
                 onGrabEnd={handleGrabEnd}
+                onGrabEndRight={endRenderArrow}
                 onGrabbing={handleGrabbing}
                 onRightClick={markCell}
             />

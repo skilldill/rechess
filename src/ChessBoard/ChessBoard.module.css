@@ -108,3 +108,23 @@
 .checkedCell {
     box-shadow: inset 0 0 30px rgba(233, 91, 92);
 }
+
+.arrow {
+    position: absolute;
+    width: 20px;
+    background-color: var(--color-cyan-500);
+    height: 100px;
+    opacity: 0.5;
+}
+
+.arrowEnd {
+    position: absolute;
+    bottom: -45px;
+    left: -5px;
+    width: 0;
+    height: 0;
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+    border-left: 30px solid var(--color-cyan-500);
+    transform: rotate(90deg);
+}

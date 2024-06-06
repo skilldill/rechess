@@ -5,3 +5,5 @@ export type ChangeMove = {
     withTransition?: boolean;
     attackedPos?: CellPos; // for pawn and beated field
 }
+
+export type ArrowCoords = { start: number[]; end: number[] };

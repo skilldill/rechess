@@ -90,8 +90,40 @@ export const checkIsCastlingMove = (moveData: MoveData) => {
 /**
  * Проверка клетки, на то есть ли шах
  */
-export const hasCheck = (cell: Cell, currentColor: FigureColor, linesWithCheck: CellPos[][]) => 
+export const hasCheck = (cell: Cell, currentColor: FigureColor, linesWithCheck: CellPos[][]) =>
     !!cell.figure &&
     cell.figure.type === 'king' &&
     cell.figure.color === currentColor &&
     linesWithCheck.length > 0
+
+export const degrees = (a: number, b: number) =>
+    (Math.atan(a / b) * 180) / Math.PI;
+
+export const calcAngle = (start: number[], end: number[]) => {
+    const x = end[0] - start[0];
+    const y = end[1] - start[1];
+
+    if (x > 0 && y > 0) {
+        return degrees(y, x) - 90;
+    }
+
+    if (x < 0 && y < 0) {
+        return degrees(y, x) + 90;
+    }
+
+    if (x < 0 && y > 0) {
+        return degrees(y, x) + 90;
+    }
+
+    if (x > 0 && y < 0) {
+        return degrees(y, x) - 90;
+    }
+
+    if (y === 0 && x > 0) return -90;
+
+    if (y === 0 && x < 0) return 90;
+
+    if (x === 0 && y < 0) return 180;
+
+    return 0;
+};
