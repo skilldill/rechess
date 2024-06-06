@@ -23,7 +23,7 @@ export const Arrow: FC<ArrowProps> = (props) => {
   );
 
   if (arrowLength <= ARROW_CORRECTION * 3) {
-    return <></>;
+    return null;
   }
 
   return (

@@ -19,9 +19,9 @@ export const ArrowLayout: FC<ArrowLayoutType> = (props) => {
 
     return (
         <div className={styles.arrowsLayer}>
-            {(startArrowCoord[0] > -1) && (grabbingPos[0] > -1) ? (
+            {(startArrowCoord[0] > -1) && (grabbingPos[0] > -1) && (
                 <Arrow start={startArrowCoord} end={grabbingPos} />
-            ) : <></>}
+            )}
             {arrowsCoords.map((coords, i) => (
                 <Arrow key={i} {...coords} />
             ))}
