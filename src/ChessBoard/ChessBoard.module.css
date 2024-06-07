@@ -115,6 +115,7 @@
     background-color: #6ac2fd;
     height: 100px;
     opacity: 0.5;
+    z-index: 1;
 }
 
 .arrowEnd {
