@@ -112,7 +112,7 @@
 .arrow {
     position: absolute;
     width: 20px;
-    background-color: var(--color-cyan-500);
+    background-color: #6ac2fd;
     height: 100px;
     opacity: 0.5;
 }
@@ -125,6 +125,6 @@
     height: 0;
     border-top: 30px solid transparent;
     border-bottom: 30px solid transparent;
-    border-left: 30px solid var(--color-cyan-500);
+    border-left: 30px solid #6ac2fd;
     transform: rotate(90deg);
 }
