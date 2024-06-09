@@ -3,16 +3,17 @@ import React, { FC } from "react";
 import styles from './ChessBoard.module.css';
 import { getFigureCSS } from "./utils";
 import cn from 'classnames';
-import { DEFAULT_CELL_SIZE } from "./constants";
 import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
+import { ChessBoardConfig } from "./models";
 
 type HoldedFigureProps = {
     holdedFigure?: Figure;
     grabbingPos: CellPos;
+    boardConfig: ChessBoardConfig;
 }
 
 export const HoldedFigure: FC<HoldedFigureProps> = (props) => {
-    const { holdedFigure, grabbingPos } = props;
+    const { holdedFigure, grabbingPos, boardConfig } = props;
 
     // Эта проверка убирает мерациния фигуры из точки -1 -1
     // в самом начале захвата фигуры
@@ -30,11 +31,11 @@ export const HoldedFigure: FC<HoldedFigureProps> = (props) => {
             style={{ 
                 position: 'fixed',
                 zIndex: 6,
-                top: `${grabbingPos[1] - DEFAULT_CELL_SIZE / 2}px`,
-                left: `${grabbingPos[0] - DEFAULT_CELL_SIZE / 2}px`  
+                top: `${grabbingPos[1] - boardConfig.cellSize / 2}px`,
+                left: `${grabbingPos[0] - boardConfig.cellSize / 2}px`,
+                width: boardConfig.cellSize,
+                height: boardConfig.cellSize,
             }}
-        >
-            {CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}
-        </div>
+        > {CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}</div>
     );
 } 

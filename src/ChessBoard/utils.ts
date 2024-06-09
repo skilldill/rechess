@@ -1,4 +1,6 @@
 import { Cell, CellPos, Figure, FigureColor, MoveData } from "../JSChessEngine";
+import { ChessBoardConfig } from "./models";
+import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
 /**
  * Возвращает класс для фигуры в клетке
@@ -127,3 +129,19 @@ export const calcAngle = (start: number[], end: number[]) => {
 
     return 0;
 };
+
+export const getChessBoardConfig = (config: Partial<ChessBoardConfig> | undefined): ChessBoardConfig => {
+    if (!config) return DEFAULT_CHESSBORD_CONFIG;
+
+    const configKeyes = Object.keys(DEFAULT_CHESSBORD_CONFIG);
+
+    const buildedConfig: Record<string, string | number> = {};
+
+    configKeyes.forEach((key) => {
+        buildedConfig[key as keyof ChessBoardConfig] = 
+            config[key as keyof ChessBoardConfig] 
+            || DEFAULT_CHESSBORD_CONFIG[key as keyof ChessBoardConfig]
+    });
+
+    return buildedConfig as ChessBoardConfig;
+}

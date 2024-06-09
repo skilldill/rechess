@@ -1,13 +1,15 @@
 import { FENtoGameState, FigureColor, MoveData } from "../JSChessEngine";
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import styles from './ChessBoard.module.css';
 import { ChessBoardCellsLayout } from "./ChessBoardCellsLayout";
 import { ChessBoardFiguresLayout } from "./ChessBoardFiguresLayout";
 import { ChessBoardControlLayout } from "./ChessBoardControlLayout";
 import { useChessBoardInteractive } from "./useChessBoardInteractive";
 import { ChessBoardInteractiveLayout } from "./ChessBoardInteractiveLayout";
-import { ChangeMove } from "./models";
+import { ChangeMove, ChessBoardConfig } from "./models";
 import { ArrowLayout } from "./ArrowLayout";
+import { getChessBoardConfig } from "./utils";
+import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
 type ChessBoardProps = {
     FEN: string;
@@ -15,10 +17,23 @@ type ChessBoardProps = {
     color: FigureColor;
     change?: ChangeMove;
     reversed?: boolean;
+    config?: Partial<ChessBoardConfig>;
 }
 
 export const ChessBoard: FC<ChessBoardProps> = (props) => {
-    const { FEN, onChange, change, reversed } = props;
+    const { 
+        FEN, 
+        onChange, 
+        change, 
+        reversed,
+        config,
+    } = props;
+
+    const [boardConfig, setBoardConfig] = useState(DEFAULT_CHESSBORD_CONFIG);
+
+    useEffect(() => {
+        setBoardConfig(getChessBoardConfig(config));
+    }, [config]);
 
     const {
         initialState,
@@ -64,11 +79,12 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
 
     return (
         <div className={styles.chessBoard}>
-            <ChessBoardCellsLayout />
+            <ChessBoardCellsLayout boardConfig={boardConfig} />
             <ChessBoardFiguresLayout 
                 initialState={initialState}
                 change={newMove}
                 reversed={reversed}
+                boardConfig={boardConfig}
             />
             <ChessBoardInteractiveLayout
                 selectedPos={fromPos}
@@ -76,6 +92,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
                 holdedFigure={holdedFigure}
                 grabbingPos={grabbingPos}
                 markedCells={markedCells}
+                boardConfig={boardConfig}
                 onHasCheck={getHasCheckByCellPos}
             />
             <ArrowLayout 
@@ -84,6 +101,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
                 grabbingPos={grabbingPos}
             />
             <ChessBoardControlLayout
+                boardConfig={boardConfig}
                 onClick={handleClick}
                 onGrabStart={selectHoverFrom}
                 onGrabStartRight={startRenderArrow}

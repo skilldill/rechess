@@ -3,11 +3,13 @@ import styles from './ChessBoard.module.css';
 import { getFilledArrayBySize } from "./utils";
 import cn from 'classnames';
 import { CellPos } from "../JSChessEngine";
+import { ChessBoardConfig } from "./models";
 
 const BASE_BOARD_SIZE = 8
 
 type ChessBoardControlLayoutProps = {
     size?: number;
+    boardConfig: ChessBoardConfig;
 
     onClick: (position: CellPos) => void;
     onGrabStart: (position: CellPos) => void;
@@ -21,6 +23,7 @@ type ChessBoardControlLayoutProps = {
 export const ChessBoardControlLayout: FC<ChessBoardControlLayoutProps> = (props) => {
     const { 
         size = BASE_BOARD_SIZE, 
+        boardConfig,
         onClick, 
         onGrabEnd,
         onGrabbing,
@@ -81,6 +84,10 @@ export const ChessBoardControlLayout: FC<ChessBoardControlLayoutProps> = (props)
                         <div 
                             key={`control-layout-${i}`}
                             className={styles.controlCell}
+                            style={{ 
+                                width: boardConfig.cellSize, 
+                                height: boardConfig.cellSize 
+                            }}
                             onClick={() => handleClick([i, j])}
                             onMouseDown={handleGrabStart([i, j])}
                             onMouseUp={handleGrabEnd([i, j])}

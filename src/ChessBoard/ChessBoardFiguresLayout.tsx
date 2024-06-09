@@ -3,18 +3,18 @@ import React, { FC, useEffect, useState } from "react";
 import styles from './ChessBoard.module.css';
 import cn from 'classnames';
 import { checkIsCastlingMove, getFigureCSS, mapCellsToFiguresArray } from "./utils";
-import { DEFAULT_CELL_SIZE } from "./constants";
-import { ChangeMove } from "./models";
+import { ChangeMove, ChessBoardConfig } from "./models";
 import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
 
 type ChessBoardFiguresLayoutProps = {
     initialState: Cell[][];
     change?: ChangeMove;
     reversed?: boolean;
+    boardConfig: ChessBoardConfig;
 }
 
 export const ChessBoardFiguresLayout: FC<ChessBoardFiguresLayoutProps> = (props) => {
-    const { initialState, change, reversed } = props;
+    const { initialState, change, reversed, boardConfig } = props;
     const [actualState, setActualState] = useState<Figure[]>([]);
 
     useEffect(() => {
@@ -143,9 +143,11 @@ export const ChessBoardFiguresLayout: FC<ChessBoardFiguresLayoutProps> = (props)
                         [styles.hiddenFigure]: figure.position![0] === -1 || figure.position![0] === 8 
                     })}
                     style={{ 
-                        top: `${DEFAULT_CELL_SIZE * figure.position![1]}px`, 
-                        left: `${DEFAULT_CELL_SIZE * figure.position![0]}px`,
-                        transition: !!change && change.withTransition ? 'all .15s ease-out' : 'none' 
+                        top: `${boardConfig.cellSize * figure.position![1]}px`, 
+                        left: `${boardConfig.cellSize * figure.position![0]}px`,
+                        transition: !!change && change.withTransition ? 'all .15s ease-out' : 'none',
+                        width: boardConfig.cellSize,
+                        height: boardConfig.cellSize,
                     }}
                 >
                     {CHESS_PIECIES_MAP[getFigureCSS(figure)]('80%')}

@@ -5,11 +5,13 @@ import cn from 'classnames';
 import { CellPos, Figure } from "../JSChessEngine";
 import { HoldedFigure } from "./HoldedFigure";
 import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
+import { ChessBoardConfig } from "./models";
 
 const BASE_BOARD_SIZE = 8
 
 type ChessBoardInteractiveLayoutProps = {
     size?: number;
+    boardConfig: ChessBoardConfig;
     selectedPos: CellPos;
     possibleMoves: CellPos[];
     markedCells: CellPos[];
@@ -21,6 +23,7 @@ type ChessBoardInteractiveLayoutProps = {
 export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> = (props) => {
     const { 
         size = BASE_BOARD_SIZE,
+        boardConfig,
         selectedPos,
         possibleMoves,
         holdedFigure,
@@ -30,10 +33,11 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
     } = props;
 
     return (
-        <div>
+        <>
             <HoldedFigure 
                 holdedFigure={holdedFigure}
                 grabbingPos={grabbingPos}
+                boardConfig={boardConfig}
             />
             <div className={styles.interactiveLayout}>
                 {getFilledArrayBySize(size).map((_, j) => 
@@ -46,6 +50,10 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                                     [styles.checkedCell]: onHasCheck([i, j])
                                 })}
                                 key={`interactive-layout-${i}`}
+                                style={{
+                                    width: boardConfig.cellSize,
+                                    height: boardConfig.cellSize,
+                                }}
                             >
                                 {selectedPos[0] === i && selectedPos[1] === j && holdedFigure && (
                                     <div 
@@ -55,9 +63,11 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                                         ], {
                                             [styles.bluredFigure]: grabbingPos[0] !== -1,
                                         })}
-                                    >
-                                        {CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}
-                                    </div>
+                                        style={{
+                                            width: boardConfig.cellSize,
+                                            height: boardConfig.cellSize,
+                                        }}
+                                    >{CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}</div>
                                 )}
                                 {checkIsPossibleMove(possibleMoves, [i, j]) && (
                                     <div className={styles.possibleMoveMark} />
@@ -67,6 +77,6 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                     </div>
                 )}
             </div>
-        </div>
+        </>
     )
 }

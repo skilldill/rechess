@@ -161,6 +161,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     setHoldedFigure(undefined);
     clearFromPos();
     clearGrabbingPos();
+    clearArrows();
+    clearMarkedCells();
 
     return { moveData, attackedPos };
   }
@@ -222,6 +224,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     setClickedFigure(undefined);
     clearClickedPos();
     clearGrabbingPos();
+    clearArrows();
+    clearMarkedCells();
 
     return { moveData, attackedPos };
   }
