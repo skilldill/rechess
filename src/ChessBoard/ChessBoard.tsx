@@ -1,5 +1,5 @@
 import { FENtoGameState, FigureColor, MoveData } from "../JSChessEngine";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import styles from './ChessBoard.module.css';
 import { ChessBoardCellsLayout } from "./ChessBoardCellsLayout";
 import { ChessBoardFiguresLayout } from "./ChessBoardFiguresLayout";
@@ -8,8 +8,6 @@ import { useChessBoardInteractive } from "./useChessBoardInteractive";
 import { ChessBoardInteractiveLayout } from "./ChessBoardInteractiveLayout";
 import { ChangeMove, ChessBoardConfig } from "./models";
 import { ArrowLayout } from "./ArrowLayout";
-import { getChessBoardConfig } from "./utils";
-import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
 type ChessBoardProps = {
     FEN: string;
@@ -29,12 +27,6 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         config,
     } = props;
 
-    const [boardConfig, setBoardConfig] = useState(DEFAULT_CHESSBORD_CONFIG);
-
-    useEffect(() => {
-        setBoardConfig(getChessBoardConfig(config));
-    }, [config]);
-
     const {
         initialState,
         fromPos,
@@ -45,6 +37,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         markedCells,
         arrowsCoords,
         startArrowCoord,
+        boardConfig,
 
         setActualState,
         selectClickFrom,
@@ -60,7 +53,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         markCell,
         getHasCheckByCellPos,
         endRenderArrow,
-    } = useChessBoardInteractive({ onChange });
+    } = useChessBoardInteractive({ onChange, config });
 
     useEffect(() => {
         const { boardState, currentColor } = FENtoGameState(FEN);
@@ -99,6 +92,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
                 arrowsCoords={arrowsCoords}
                 startArrowCoord={startArrowCoord}
                 grabbingPos={grabbingPos}
+                boardConfig={boardConfig}
             />
             <ChessBoardControlLayout
                 boardConfig={boardConfig}

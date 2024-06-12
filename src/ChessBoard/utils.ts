@@ -1,5 +1,5 @@
 import { Cell, CellPos, Figure, FigureColor, MoveData } from "../JSChessEngine";
-import { ChessBoardConfig } from "./models";
+import { ChessBoardConfig, ChessPiecesMap } from "./models";
 import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
 /**
@@ -135,7 +135,7 @@ export const getChessBoardConfig = (config: Partial<ChessBoardConfig> | undefine
 
     const configKeyes = Object.keys(DEFAULT_CHESSBORD_CONFIG);
 
-    const buildedConfig: Record<string, string | number> = {};
+    const buildedConfig: Record<string, string | number | ChessPiecesMap> = {};
 
     configKeyes.forEach((key) => {
         buildedConfig[key as keyof ChessBoardConfig] = 

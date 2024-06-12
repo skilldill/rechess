@@ -4,7 +4,6 @@ import styles from './ChessBoard.module.css';
 import cn from 'classnames';
 import { checkIsCastlingMove, getFigureCSS, mapCellsToFiguresArray } from "./utils";
 import { ChangeMove, ChessBoardConfig } from "./models";
-import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
 
 type ChessBoardFiguresLayoutProps = {
     initialState: Cell[][];
@@ -150,7 +149,7 @@ export const ChessBoardFiguresLayout: FC<ChessBoardFiguresLayoutProps> = (props)
                         height: boardConfig.cellSize,
                     }}
                 >
-                    {CHESS_PIECIES_MAP[getFigureCSS(figure)]('80%')}
+                    {boardConfig.piecesMap[getFigureCSS(figure)]('80%')}
                 </div>
             )}
         </div>

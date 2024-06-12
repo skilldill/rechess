@@ -4,8 +4,8 @@ import styles from './ChessBoard.module.css';
 import cn from 'classnames';
 import { CellPos, Figure } from "../JSChessEngine";
 import { HoldedFigure } from "./HoldedFigure";
-import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
 import { ChessBoardConfig } from "./models";
+import { FACTOR_FOR_SIZE_CIRCLE_MARK } from "./constants";
 
 const BASE_BOARD_SIZE = 8
 
@@ -53,6 +53,16 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                                 style={{
                                     width: boardConfig.cellSize,
                                     height: boardConfig.cellSize,
+                                    backgroundColor: selectedPos[0] === i && selectedPos[1] === j 
+                                        ? boardConfig.selectedCellColor
+                                        : 'transparent',
+                                    border: selectedPos[0] === i && selectedPos[1] === j 
+                                        ? boardConfig.selectedCellBorder
+                                        : 'none',
+                                    boxShadow: checkIsPossibleMove(markedCells, [i, j])
+                                        ? `inset 0 0 30px ${boardConfig.markedCellColor}`
+                                        : onHasCheck([i, j]) ? `inset 0 0 30px ${boardConfig.checkedCellColor}`
+                                        : 'none'
                                 }}
                             >
                                 {selectedPos[0] === i && selectedPos[1] === j && holdedFigure && (
@@ -67,10 +77,17 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                                             width: boardConfig.cellSize,
                                             height: boardConfig.cellSize,
                                         }}
-                                    >{CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}</div>
+                                    >{boardConfig.piecesMap[getFigureCSS(holdedFigure)]('80%')}</div>
                                 )}
                                 {checkIsPossibleMove(possibleMoves, [i, j]) && (
-                                    <div className={styles.possibleMoveMark} />
+                                    <div 
+                                        className={styles.possibleMoveMark}
+                                        style={{
+                                            width: boardConfig.cellSize / FACTOR_FOR_SIZE_CIRCLE_MARK,
+                                            height: boardConfig.cellSize / FACTOR_FOR_SIZE_CIRCLE_MARK,
+                                            backgroundColor: boardConfig.circleMarkColor,
+                                        }}
+                                    />
                                 )}
                             </div>
                         ))}

@@ -3,7 +3,6 @@ import React, { FC } from "react";
 import styles from './ChessBoard.module.css';
 import { getFigureCSS } from "./utils";
 import cn from 'classnames';
-import { CHESS_PIECIES_MAP } from "./chessPieciesMap";
 import { ChessBoardConfig } from "./models";
 
 type HoldedFigureProps = {
@@ -36,6 +35,6 @@ export const HoldedFigure: FC<HoldedFigureProps> = (props) => {
                 width: boardConfig.cellSize,
                 height: boardConfig.cellSize,
             }}
-        > {CHESS_PIECIES_MAP[getFigureCSS(holdedFigure)]('80%')}</div>
+        > {boardConfig.piecesMap[getFigureCSS(holdedFigure)]('80%')}</div>
     );
-} 
+}

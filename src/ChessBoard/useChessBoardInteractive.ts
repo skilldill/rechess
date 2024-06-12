@@ -1,16 +1,18 @@
 import { Cell, CellPos, Figure, FigureColor, JSChessEngine, MoveData, stateToFEN } from "../JSChessEngine";
-import { useState } from "react"
-import { checkIsPossibleMove, checkPositionsHas, hasCheck } from "./utils";
-import { ArrowCoords, ChangeMove } from "./models";
-import { DEFAULT_CELL_SIZE } from "./constants";
+import { useEffect, useState } from "react"
+import { checkIsPossibleMove, checkPositionsHas, getChessBoardConfig, hasCheck } from "./utils";
+import { ArrowCoords, ChangeMove, ChessBoardConfig } from "./models";
+import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
 type UseChessBoardInteractiveProps = {
+  config?: Partial<ChessBoardConfig>;
   onChange: (moveData: MoveData) => void;
 }
 
 export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) => {
-  const { onChange } = props;
+  const { onChange, config } = props;
 
+  const [boardConfig, setBoardConfig] = useState(DEFAULT_CHESSBORD_CONFIG);
   const [initialState, setInitialState] = useState<Cell[][]>([]);
   const [actualState, setActualState] = useState<Cell[][]>([]);
   const [fromPos, setFromPos] = useState<CellPos>([-1, -1]);
@@ -39,6 +41,10 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   const clearMarkedCells = () => setMarkedCells([]);
   const clearClickedPos = () => setClickedPos([-1, -1]);
   const clearArrows = () => setArrowsCoords([]);
+
+  useEffect(() => {
+    setBoardConfig(getChessBoardConfig(config));
+  }, []);
 
   const cleanAllForFigure = () => {
     setHoldedFigure(undefined);
@@ -328,8 +334,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
 
   const startRenderArrow = (pos: CellPos) => {
     const startPos: CellPos = [
-      (pos[0] + 1) * DEFAULT_CELL_SIZE - DEFAULT_CELL_SIZE / 2 - 10,
-      (pos[1] + 1) * DEFAULT_CELL_SIZE - DEFAULT_CELL_SIZE / 2,
+      (pos[0] + 1) * boardConfig.cellSize - boardConfig.cellSize / 2 - 10,
+      (pos[1] + 1) * boardConfig.cellSize - boardConfig.cellSize / 2,
     ];
 
     setStartArrowCoord(startPos);
@@ -346,8 +352,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
         { 
           start: [...startArrowCoord], 
           end: [
-            (x * DEFAULT_CELL_SIZE) + (DEFAULT_CELL_SIZE / 2 - 10), 
-            (y * DEFAULT_CELL_SIZE) + (DEFAULT_CELL_SIZE / 2),
+            (x * boardConfig.cellSize) + (boardConfig.cellSize / 2 - 10), 
+            (y * boardConfig.cellSize) + (boardConfig.cellSize / 2),
           ],
         }
       ];
@@ -359,6 +365,7 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   return {
     fromPos,
     newMove,
+    boardConfig,
     markedCells,
     grabbingPos,
     actualState,

@@ -1,7 +1,20 @@
 import { CellPos, MoveData } from "../JSChessEngine"
 
+export interface ChessPiecesMap {
+    [key: string]: (size: string) => JSX.Element;
+}
+
 export type ChessBoardConfig = {
     cellSize: number;
+    whiteCellColor: string;
+    blackCellColor: string;
+    selectedCellColor: string;
+    selectedCellBorder: string;
+    markedCellColor: string;
+    circleMarkColor: string;
+    arrowColor: string;
+    checkedCellColor: string;
+    piecesMap: ChessPiecesMap;
 }
 
 export type ChangeMove = {

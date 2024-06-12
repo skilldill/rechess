@@ -5,6 +5,7 @@ import { calcAngle } from './utils';
 interface ArrowProps {
   start: number[];
   end: number[];
+  color: string;
 }
 
 // Используется для центрирования конца
@@ -12,7 +13,7 @@ interface ArrowProps {
 const ARROW_CORRECTION = 20;
 
 export const Arrow: FC<ArrowProps> = (props) => {
-  const { start, end } = props;
+  const { start, end, color } = props;
 
   const arrowLength = useMemo(
     () =>
@@ -35,9 +36,13 @@ export const Arrow: FC<ArrowProps> = (props) => {
         left: `${start[0]}px`,
         transformOrigin: `10px 0`,
         transform: `rotate(${calcAngle(start, end)}deg)`,
+        backgroundColor: color,
       }}
     >
-      <div className={styles.arrowEnd}></div>
+      <div 
+        className={styles.arrowEnd} 
+        style={{ borderLeftColor: color }}
+      ></div>
     </div>
   );
 };
