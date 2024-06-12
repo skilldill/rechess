@@ -33,7 +33,7 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
     } = props;
 
     return (
-        <>
+        <div>
             <HoldedFigure 
                 holdedFigure={holdedFigure}
                 grabbingPos={grabbingPos}
@@ -94,6 +94,6 @@ export const ChessBoardInteractiveLayout: FC<ChessBoardInteractiveLayoutProps> =
                     </div>
                 )}
             </div>
-        </>
+        </div>
     )
 }
