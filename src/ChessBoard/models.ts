@@ -1,4 +1,4 @@
-import { CellPos, MoveData } from "../JSChessEngine"
+import { CellPos, Figure, MoveData } from "../JSChessEngine"
 
 export interface ChessPiecesMap {
     [key: string]: (size: string) => JSX.Element;
@@ -21,6 +21,7 @@ export type ChangeMove = {
     move: MoveData;
     withTransition?: boolean;
     attackedPos?: CellPos; // for pawn and beated field
+    transformTo?: Figure;
 }
 
 export type ArrowCoords = { start: number[]; end: number[] };

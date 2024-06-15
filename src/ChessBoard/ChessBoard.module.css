@@ -39,9 +39,7 @@
     box-sizing: border-box;
 }
 
-.controlCell {
-
-}
+.controlCell {}
 
 .interactiveCell {
     display: flex;
@@ -58,13 +56,9 @@
     display: flex;
 }
 
-.cell {
+.cell {}
 
-}
-
-.cellLight {
-
-}
+.cellLight {}
 
 .figure {
     position: absolute;
@@ -87,13 +81,9 @@
     transform: rotate(-90deg);
 }
 
-.markedCell {
+.markedCell {}
 
-}
-
-.checkedCell {
-
-}
+.checkedCell {}
 
 .arrow {
     position: absolute;
@@ -113,4 +103,28 @@
     border-bottom: 30px solid transparent;
     border-left: 30px solid;
     transform: rotate(90deg);
+}
+
+.figurePicker {
+    display: flex;
+    justify-content: center;
+}
+
+.figurePickerItem {
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.chessBoardFigurePicker {
+    z-index: 101;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

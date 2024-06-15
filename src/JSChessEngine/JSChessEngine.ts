@@ -1,44 +1,43 @@
-/* eslint-disable */
 export type FigureType =
   | 'pawn'
   | 'bishop'
   | 'knigts'
   | 'rook'
   | 'queen'
-  | 'king'
-export type FigureColor = 'white' | 'black'
+  | 'king';
+export type FigureColor = 'white' | 'black';
 
-export type CellPos = [number, number]
+export type CellPos = [number, number];
 
 export interface Figure {
-  type: FigureType
-  color: FigureColor
-  touched?: boolean
-  position?: CellPos
+  type: FigureType;
+  color: FigureColor;
+  touched?: boolean;
+  position?: CellPos;
 }
 
-export type CellColor = 'white' | 'black'
+export type CellColor = 'white' | 'black';
 
 export interface Cell {
-  figure?: Figure
-  beated?: boolean
+  figure?: Figure;
+  beated?: boolean;
 }
 
 export interface ChessBoardConfig {
-  cellWhiteBg: string
-  cellBlackBg: string
-  cellSelectedBg: string
-  cellSize: number
+  cellWhiteBg: string;
+  cellBlackBg: string;
+  cellSelectedBg: string;
+  cellSize: number;
   figures: {
-    black: { [figureType: string]: string }
-    white: { [figureType: string]: string }
-  }
+    black: { [figureType: string]: string };
+    white: { [figureType: string]: string };
+  };
 }
 
 export interface MoveNotation {
-  move: string
-  figure: Figure
-  stateFEN: string
+  move: string;
+  figure: Figure;
+  stateFEN: string;
 }
 
 export type MoveDirection =
@@ -49,7 +48,7 @@ export type MoveDirection =
   | 'top-right'
   | 'bottom-right'
   | 'bottom-left'
-  | 'top-left'
+  | 'top-left';
 
 export type MoveType =
   | 'move'
@@ -59,7 +58,7 @@ export type MoveType =
   | 'mat'
   | 'transform'
   | '0-0'
-  | '0-0-0'
+  | '0-0-0';
 
 export type GameResultType =
   | 'mat'
@@ -67,53 +66,53 @@ export type GameResultType =
   | 'draw'
   | 'timeout'
   | 'surrender'
-  | undefined
+  | undefined;
 
 export interface GameResult {
-  resultType: GameResultType
-  winColor?: FigureColor // Если "Пат" или "Ничья" то нет цвета - победителя
+  resultType: GameResultType;
+  winColor?: FigureColor; // Если "Пат" или "Ничья" то нет цвета - победителя
 }
 
-export type PawnMoveType = 'first' | 'default' | 'attack'
+export type PawnMoveType = 'first' | 'default' | 'attack';
 
 export interface MoveByPawn {
-  pos: CellPos
-  typeMove: PawnMoveType
+  pos: CellPos;
+  typeMove: PawnMoveType;
 }
 
 export interface MoveData {
-  from: CellPos
-  to: CellPos
-  figure: Figure
-  type?: MoveType
-  FEN?: string
-  timeWhite?: number
-  timeBlack?: number
+  from: CellPos;
+  to: CellPos;
+  figure: Figure;
+  type?: MoveType;
+  FEN?: string;
+  timeWhite?: number;
+  timeBlack?: number;
 }
 
 export interface BeatedCountsData {
-  pawn: number
-  knigts: number
-  bishop: number
-  rook: number
-  queen: number
+  pawn: number;
+  knigts: number;
+  bishop: number;
+  rook: number;
+  queen: number;
 }
 
-export type CastlingType = '0-0' | '0-0-0'
+export type CastlingType = '0-0' | '0-0-0';
 
 export type OnCheckPossible = (
   state: Cell[][],
   figurePos: CellPos,
-  targetPos: CellPos
-) => boolean
+  targetPos: CellPos,
+) => boolean;
 
 const DIRECTIONS_D: MoveDirection[] = [
   'top-right',
   'bottom-right',
   'bottom-left',
-  'top-left'
-]
-const DIRECTIONS_VH: MoveDirection[] = ['top', 'right', 'bottom', 'left']
+  'top-left',
+];
+const DIRECTIONS_VH: MoveDirection[] = ['top', 'right', 'bottom', 'left'];
 
 const FIGURES_COUNTS = {
   PAWNS_COUNT: 8,
@@ -121,8 +120,8 @@ const FIGURES_COUNTS = {
   BISHOPS_COUNT: 2,
   ROOKS_COUNT: 2,
   QUEENS_COUNT: 1,
-  KINGS_COUNT: 1
-}
+  KINGS_COUNT: 1,
+};
 
 export class JSChessEngine {
   /**
@@ -138,10 +137,10 @@ export class JSChessEngine {
     linesWithCheck: CellPos[][],
     revese = false
   ): CellPos[] => {
-    const figure = state[j][i].figure!
-    const { type } = figure
+    const figure = state[j][i].figure!;
+    const { type } = figure;
 
-    let nextPositions: CellPos[] = []
+    let nextPositions: CellPos[] = [];
 
     switch (type) {
       case 'pawn':
@@ -149,82 +148,85 @@ export class JSChessEngine {
           state,
           [i, j],
           revese
-        )
+        );
         nextPositions = JSChessEngine.correctionPossibleMoves(
           state,
           [i, j],
           pawnPossibleMoves,
           linesWithCheck
-        )
-        break
+        );
+        break;
 
       case 'bishop':
         const bishopPossibleMoves = JSChessEngine.getNextMovesBishop(state, [
           i,
-          j
-        ])
+          j,
+        ]);
         nextPositions = JSChessEngine.correctionPossibleMoves(
           state,
           [i, j],
           bishopPossibleMoves,
           linesWithCheck
-        )
-        break
+        );
+        break;
 
       case 'knigts':
         const knigtPossibleMoves = JSChessEngine.getNextMovesKnigts(state, [
           i,
-          j
-        ])
+          j,
+        ]);
         nextPositions = JSChessEngine.correctionPossibleMoves(
           state,
           [i, j],
           knigtPossibleMoves,
           linesWithCheck
-        )
-        break
+        );
+        break;
 
       case 'rook':
-        const rookPossibleMovese = JSChessEngine.getNextMovesRook(state, [i, j])
+        const rookPossibleMovese = JSChessEngine.getNextMovesRook(state, [
+          i,
+          j,
+        ]);
         nextPositions = JSChessEngine.correctionPossibleMoves(
           state,
           [i, j],
           rookPossibleMovese,
           linesWithCheck
-        )
-        break
+        );
+        break;
 
       case 'queen':
         const queenPossibleMoves = JSChessEngine.getNextMovesQueen(state, [
           i,
-          j
-        ])
+          j,
+        ]);
         nextPositions = JSChessEngine.correctionPossibleMoves(
           state,
           [i, j],
           queenPossibleMoves,
           linesWithCheck
-        )
-        break
+        );
+        break;
 
       case 'king':
-        nextPositions = JSChessEngine.getNextMovesKing(state, [i, j], revese)
-        break
+        nextPositions = JSChessEngine.getNextMovesKing(state, [i, j], revese);
+        break;
     }
 
-    return nextPositions
-  }
+    return nextPositions;
+  };
 
   /**
    * Возвращает первернутое состояние доски
    * @param state состояние доски
    */
   static reverseChessBoard = (state: Cell[][]) => {
-    const prepareCells = [...state]
-    const reversedCells = [...prepareCells.reverse()]
+    const prepareCells = [...state];
+    const reversedCells = [...prepareCells.reverse()];
 
-    return reversedCells.map((row) => [...row].reverse())
-  }
+    return reversedCells.map((row) => [...row].reverse());
+  };
 
   /**
    * Обновляет данные хода для того чтобы
@@ -233,17 +235,17 @@ export class JSChessEngine {
    * @param boardSize размер доски
    */
   static reverseMove = (moveData: MoveData, boardSize: number) => {
-    const { from, to, figure, type } = moveData
+    const { from, to, figure, type } = moveData;
 
     const reversedMove: MoveData = {
       figure,
       from: [boardSize - (from[0] + 1), boardSize - (from[1] + 1)],
       to: [boardSize - (to[0] + 1), boardSize - (to[1] + 1)],
-      type
-    }
+      type,
+    };
 
-    return reversedMove
-  }
+    return reversedMove;
+  };
 
   /**
    * Возвращет перевернутое значение для начала и конца хода фигуры
@@ -252,14 +254,14 @@ export class JSChessEngine {
    * @param boardSize размер доски
    */
   static reverseMoveVector = (moveVector: CellPos[], boardSize = 8) => {
-    const [from, to] = moveVector
+    const [from, to] = moveVector;
     const reversedMoveVector = [
       [boardSize - (from[0] + 1), boardSize - (from[1] + 1)],
-      [boardSize - (to[0] + 1), boardSize - (to[1] + 1)]
-    ]
+      [boardSize - (to[0] + 1), boardSize - (to[1] + 1)],
+    ];
 
-    return reversedMoveVector
-  }
+    return reversedMoveVector;
+  };
 
   /**
    * Проверка на то что позиция находится в пределах доски
@@ -272,8 +274,8 @@ export class JSChessEngine {
       pos[0] < state.length &&
       pos[1] >= 0 &&
       pos[1] < state.length
-    )
-  }
+    );
+  };
 
   /**
    * Возвращает цвет фигуры
@@ -281,8 +283,8 @@ export class JSChessEngine {
    * @param pos позиция фигуры
    */
   static getFigureColor = (state: Cell[][], pos: CellPos) => {
-    return state[pos[1]][pos[0]].figure!.color
-  }
+    return state[pos[1]][pos[0]].figure!.color;
+  };
 
   /**
    * Возвращает тип фигры
@@ -290,8 +292,8 @@ export class JSChessEngine {
    * @param pos позиция фигуры
    */
   static getFigureType = (state: Cell[][], pos: CellPos) => {
-    return state[pos[1]][pos[0]].figure?.type
-  }
+    return state[pos[1]][pos[0]].figure?.type;
+  };
 
   /**
    * Проверка находится ли в указанной клетке вражеская фигура
@@ -300,11 +302,11 @@ export class JSChessEngine {
    * @param target положение фигуры - цели
    */
   static checkEnemy = (state: Cell[][], pos: CellPos, target: CellPos) => {
-    const color = JSChessEngine.getFigureColor(state, pos)
-    const targetColor = state[target[1]][target[0]]?.figure?.color
+    const color = JSChessEngine.getFigureColor(state, pos);
+    const targetColor = state[target[1]][target[0]]?.figure?.color;
 
-    return !!targetColor && targetColor !== color
-  }
+    return !!targetColor && targetColor !== color;
+  };
 
   /**
    * Проверка находится ли в указанной клетке союзная фигура
@@ -313,11 +315,11 @@ export class JSChessEngine {
    * @param target положение фигуры - цели
    */
   static checkTeammate = (state: Cell[][], pos: CellPos, target: CellPos) => {
-    const color = JSChessEngine.getFigureColor(state, pos)
-    const targetColor = state[target[1]][target[0]].figure?.color
+    const color = JSChessEngine.getFigureColor(state, pos);
+    const targetColor = state[target[1]][target[0]].figure?.color;
 
-    return !!targetColor && targetColor === color
-  }
+    return !!targetColor && targetColor === color;
+  };
 
   /**
    * Проверка на то что фигура-цель вражеский король
@@ -325,13 +327,17 @@ export class JSChessEngine {
    * @param pos положение фигуры союзного цвета
    * @param target положение фигуры - цели
    */
-  static checkEnemyKing = (state: Cell[][], pos: CellPos, target: CellPos) => {
-    const isKing = state[target[1]][target[0]]?.figure?.type === 'king'
+  static checkEnemyKing = (
+    state: Cell[][],
+    pos: CellPos,
+    target: CellPos
+  ) => {
+    const isKing = state[target[1]][target[0]]?.figure?.type === 'king';
 
-    if (!isKing) return false
+    if (!isKing) return false;
 
-    return JSChessEngine.checkEnemy(state, pos, target)
-  }
+    return JSChessEngine.checkEnemy(state, pos, target);
+  };
 
   /**
    * Проверяет битая ли клетка, клетка становится битой после того
@@ -340,8 +346,8 @@ export class JSChessEngine {
    * @param target позиция проверяемой клетки
    */
   static checkBeatedCell = (state: Cell[][], target: CellPos) => {
-    return !!state[target[1]][target[0]]?.beated
-  }
+    return !!state[target[1]][target[0]]?.beated;
+  };
 
   /**
    * Возвращает есть ли фигура в указаной позиции
@@ -350,8 +356,8 @@ export class JSChessEngine {
    * @returns
    */
   static hasFigure = (state: Cell[][], pos: CellPos) => {
-    return !!state[pos[1]][pos[0]]?.figure
-  }
+    return !!state[pos[1]][pos[0]]?.figure;
+  };
 
   /**
    * Проверяет дальнобойная ли фигура
@@ -360,13 +366,13 @@ export class JSChessEngine {
    * @param figurePos позиция фигуры
    */
   static checkFigureIsLongRange = (state: Cell[][], figurePos: CellPos) => {
-    const { figure } = state[figurePos[1]][figurePos[0]]
+    const { figure } = state[figurePos[1]][figurePos[0]];
     return (
       figure?.type === 'bishop' ||
       figure?.type === 'rook' ||
       figure?.type === 'queen'
-    )
-  }
+    );
+  };
 
   /**
    * Возвращает количество вражеских которые можно атаковать (кроме короля) фигур из массива позиций
@@ -379,19 +385,19 @@ export class JSChessEngine {
     figurePos: CellPos,
     positions: CellPos[]
   ) => {
-    let count = 0
+    let count = 0;
 
     positions.forEach((pos) => {
       if (
         JSChessEngine.checkEnemy(state, figurePos, pos) &&
         !JSChessEngine.checkEnemyKing(state, figurePos, pos)
       ) {
-        count += 1
+        count += 1;
       }
-    })
+    });
 
-    return count
-  }
+    return count;
+  };
 
   /**
    * Возвращает позицию союзного короля
@@ -399,30 +405,30 @@ export class JSChessEngine {
    * @param figurePos позиция фигуры
    */
   static getTeammateKingPos = (state: Cell[][], figurePos: CellPos) => {
-    const figureColor = JSChessEngine.getFigureColor(state, figurePos)
+    const figureColor = JSChessEngine.getFigureColor(state, figurePos);
 
-    let kingPos: CellPos | undefined
+    let kingPos: CellPos | undefined = undefined;
 
     // Используется цикл для того чтобы можно было остановить поиск
     for (let j = 0; j < state.length; j++) {
-      const row = state[j]
+      const row = state[j];
 
       for (let i = 0; i < row.length; i++) {
-        const { figure } = row[i]
+        const { figure } = row[i];
 
         if (figure?.color === figureColor && figure.type === 'king') {
-          kingPos = [i, j]
-          break
+          kingPos = [i, j];
+          break;
         }
       }
 
-      if (kingPos) {
-        break
+      if (!!kingPos) {
+        break;
       }
     }
 
-    return kingPos
-  }
+    return kingPos;
+  };
 
   /**
    * Возвращает все клетки с вражескими фигурами
@@ -430,16 +436,16 @@ export class JSChessEngine {
    * @param pos позиция союзной фигуры
    */
   static getAllEnemysPositions = (state: Cell[][], pos: CellPos) => {
-    const enemysPos: CellPos[] = []
+    const enemysPos: CellPos[] = [];
 
     state.forEach((row, j) =>
       row.forEach((_, i) => {
-        JSChessEngine.checkEnemy(state, pos, [i, j]) && enemysPos.push([i, j])
+        JSChessEngine.checkEnemy(state, pos, [i, j]) && enemysPos.push([i, j]);
       })
-    )
+    );
 
-    return enemysPos
-  }
+    return enemysPos;
+  };
 
   /**
    * Возвращает позиции фигур-союзников по цвету
@@ -450,18 +456,18 @@ export class JSChessEngine {
     state: Cell[][],
     color: FigureColor
   ) => {
-    const positions: CellPos[] = []
+    const positions: CellPos[] = [];
 
     state.forEach((row, j) =>
       row.forEach((cell, i) => {
         if (!!cell.figure && cell.figure.color === color) {
-          positions.push([i, j])
+          positions.push([i, j]);
         }
       })
-    )
+    );
 
-    return positions
-  }
+    return positions;
+  };
 
   /**
    * Полная проверка возможности хода для фигур: pawn, knigt, bishop, rook, queen
@@ -484,8 +490,8 @@ export class JSChessEngine {
         (JSChessEngine.hasFigure(state, target) &&
           JSChessEngine.checkEnemy(state, pos, target) &&
           !JSChessEngine.checkEnemyKing(state, pos, target)))
-    )
-  }
+    );
+  };
 
   /**
    * Прооверяет возможность атаки клетки
@@ -505,8 +511,8 @@ export class JSChessEngine {
       JSChessEngine.checkInBorderBoard(state, target) &&
       (!JSChessEngine.hasFigure(state, target) ||
         JSChessEngine.checkEnemy(state, figurePos, target))
-    )
-  }
+    );
+  };
 
   /**
    * Проверка находится ли поле под атакой вражеской фигуры
@@ -521,8 +527,8 @@ export class JSChessEngine {
     target: CellPos
   ) => {
     // Если позиция находится за пределами доски, то сразу false
-    return JSChessEngine.checkInBorderBoard(state, target)
-  }
+    return JSChessEngine.checkInBorderBoard(state, target);
+  };
 
   /**
    * Проверяет атакованные поля вражеской пешкой
@@ -539,11 +545,11 @@ export class JSChessEngine {
     switch (target.typeMove) {
       case 'default':
       case 'first':
-        return false
+        return false;
       case 'attack':
-        return JSChessEngine.checkInBorderBoard(state, target.pos)
+        return JSChessEngine.checkInBorderBoard(state, target.pos);
     }
-  }
+  };
 
   /**
    * Проверяет находится ли позиция между атакованным королем
@@ -564,14 +570,14 @@ export class JSChessEngine {
       return (
         (pos[1] > kingPos[1] && pos[1] < attackerPos[1]) ||
         (pos[1] > attackerPos[1] && pos[1] < kingPos[1])
-      )
+      );
     }
 
     if (pos[1] === attackerPos[1] && pos[1] === kingPos[1]) {
       return (
         (pos[0] > kingPos[0] && pos[0] < attackerPos[0]) ||
         (pos[0] > attackerPos[0] && pos[0] < kingPos[0])
-      )
+      );
     }
 
     // Проверка диагональных атак
@@ -582,7 +588,7 @@ export class JSChessEngine {
       return (
         (pos[0] > kingPos[0] && pos[0] < attackerPos[0]) ||
         (pos[0] > attackerPos[0] && pos[0] < kingPos[0])
-      )
+      );
     }
 
     if (
@@ -592,11 +598,11 @@ export class JSChessEngine {
       return (
         (pos[1] > kingPos[1] && pos[1] < attackerPos[1]) ||
         (pos[1] > attackerPos[1] && pos[1] < kingPos[1])
-      )
+      );
     }
 
-    return false
-  }
+    return false;
+  };
 
   /**
    * Корректирует возможные ходы фигуры в зависимости от того находится ли
@@ -612,22 +618,22 @@ export class JSChessEngine {
     possibleMoves: CellPos[],
     linesWithCheck: CellPos[][]
   ) => {
-    const kingPos = JSChessEngine.getTeammateKingPos(state, figurePos)!
+    const kingPos = JSChessEngine.getTeammateKingPos(state, figurePos)!;
 
-    const enemysPos = JSChessEngine.getAllEnemysPositions(state, figurePos)
+    const enemysPos = JSChessEngine.getAllEnemysPositions(state, figurePos);
 
     // Находим все дальнобойные фигуры противника,
     // так как только они могут атаковать на протяженной дистанции
     const longrangeEnemysPos = enemysPos.filter((pos) =>
       JSChessEngine.checkFigureIsLongRange(state, pos)
-    )
+    );
 
-    const correctedPossibleMoves: CellPos[] = []
+    const correctedPossibleMoves: CellPos[] = [];
 
-    let kingBehidFigure = false
+    let kingBehidFigure = false;
 
     longrangeEnemysPos.forEach((enemyPos) => {
-      const enemyType = state[enemyPos[1]][enemyPos[0]].figure!.type
+      const enemyType = state[enemyPos[1]][enemyPos[0]].figure!.type;
 
       switch (enemyType) {
         case 'bishop':
@@ -637,23 +643,23 @@ export class JSChessEngine {
                 state,
                 enemyPos,
                 direction
-              )
+              );
 
               // Ищем индекс позиции короля
               const foundIndexKingPos = attackedLine.findIndex(
                 (pos) => pos[0] === kingPos[0] && pos[1] === kingPos[1]
-              )
+              );
 
               // Ищем позицию фигуры на линии атаки
               const foundIndexFigurePos = attackedLine.findIndex(
                 (pos) => pos[0] === figurePos[0] && pos[1] === figurePos[1]
-              )
+              );
 
               const countFiguresBehindKing = JSChessEngine.getCountEnemys(
                 state,
                 enemyPos,
                 attackedLine
-              )
+              );
 
               // Если индексы найдены и индекс короля больше чем индекс фигуры на линии атаки
               // то корректируем возможные движения фигуры
@@ -661,30 +667,30 @@ export class JSChessEngine {
                 foundIndexKingPos > -1 &&
                 foundIndexFigurePos > -1 &&
                 foundIndexKingPos > foundIndexFigurePos &&
-                countFiguresBehindKing === 1
+                countFiguresBehindKing === 1;
 
               if (kingBehidFigure) {
                 // Оставляем только те позиции которые есть и в possibleMoves и в attackedLine
                 possibleMoves.forEach((possibleMove) => {
                   // Включаем позиции атакующей фигуры так как ее можно съесть
-                  ;[...attackedLine, enemyPos].forEach((attackedPos) => {
+                  [...attackedLine, enemyPos].forEach((attackedPos) => {
                     if (
                       attackedPos[0] === possibleMove[0] &&
                       attackedPos[1] === possibleMove[1]
                     ) {
-                      correctedPossibleMoves.push(possibleMove)
+                      correctedPossibleMoves.push(possibleMove);
                     }
-                  })
-                })
+                  });
+                });
               }
             }
-          })
+          });
 
-          break
+          break;
 
         case 'rook':
           if (kingBehidFigure) {
-            break
+            break;
           }
 
           DIRECTIONS_VH.forEach((direction) => {
@@ -693,23 +699,23 @@ export class JSChessEngine {
                 state,
                 enemyPos,
                 direction
-              )
+              );
 
               // Ищем индекс позиции короля
               const foundIndexKingPos = attackedLine.findIndex(
                 (pos) => pos[0] === kingPos[0] && pos[1] === kingPos[1]
-              )
+              );
 
               // Ищем позицию фигуры на линии атаки
               const foundIndexFigurePos = attackedLine.findIndex(
                 (pos) => pos[0] === figurePos[0] && pos[1] === figurePos[1]
-              )
+              );
 
               const countFiguresBehindKing = JSChessEngine.getCountEnemys(
                 state,
                 enemyPos,
                 attackedLine
-              )
+              );
 
               // Если индексы найдены и индекс короля больше чем индекс фигуры на линии атаки
               // то корректируем возможные движения фигуры
@@ -717,55 +723,55 @@ export class JSChessEngine {
                 foundIndexKingPos > -1 &&
                 foundIndexFigurePos > -1 &&
                 foundIndexKingPos > foundIndexFigurePos &&
-                countFiguresBehindKing === 1
+                countFiguresBehindKing === 1;
 
               if (kingBehidFigure) {
                 // Оставляем только те позиции которые есть и в possibleMoves и в attackedLine
                 possibleMoves.forEach((possibleMove) => {
                   // Включаем позиции атакующей фигуры так как ее можно съесть
-                  ;[...attackedLine, enemyPos].forEach((attackedPos) => {
+                  [...attackedLine, enemyPos].forEach((attackedPos) => {
                     if (
                       attackedPos[0] === possibleMove[0] &&
                       attackedPos[1] === possibleMove[1]
                     ) {
-                      correctedPossibleMoves.push(possibleMove)
+                      correctedPossibleMoves.push(possibleMove);
                     }
-                  })
-                })
+                  });
+                });
               }
             }
-          })
+          });
 
-          break
+          break;
 
         case 'queen':
           if (kingBehidFigure) {
-            break
+            break;
           }
 
-          ;[...DIRECTIONS_D, ...DIRECTIONS_VH].forEach((direction) => {
+          [...DIRECTIONS_D, ...DIRECTIONS_VH].forEach((direction) => {
             if (!kingBehidFigure) {
               const attackedLine = JSChessEngine.getFullAttackedLine(
                 state,
                 enemyPos,
                 direction
-              )
+              );
 
               // Ищем индекс позиции короля
               const foundIndexKingPos = attackedLine.findIndex(
                 (pos) => pos[0] === kingPos[0] && pos[1] === kingPos[1]
-              )
+              );
 
               // Ищем позицию фигуры на линии атаки
               const foundIndexFigurePos = attackedLine.findIndex(
                 (pos) => pos[0] === figurePos[0] && pos[1] === figurePos[1]
-              )
+              );
 
               const countFiguresBehindKing = JSChessEngine.getCountEnemys(
                 state,
                 enemyPos,
                 attackedLine
-              )
+              );
 
               // Если индексы найдены и индекс короля больше чем индекс фигуры на линии атаки
               // то корректируем возможные движения фигуры
@@ -773,43 +779,43 @@ export class JSChessEngine {
                 foundIndexKingPos > -1 &&
                 foundIndexFigurePos > -1 &&
                 foundIndexKingPos > foundIndexFigurePos &&
-                countFiguresBehindKing === 1
+                countFiguresBehindKing === 1;
 
               if (kingBehidFigure) {
                 // Оставляем только те позиции которые есть и в possibleMoves и в attackedLine
                 possibleMoves.forEach((possibleMove) => {
                   // Включаем позиции атакующей фигуры так как ее можно съесть
-                  ;[...attackedLine, enemyPos].forEach((attackedPos) => {
+                  [...attackedLine, enemyPos].forEach((attackedPos) => {
                     if (
                       attackedPos[0] === possibleMove[0] &&
                       attackedPos[1] === possibleMove[1]
                     ) {
-                      correctedPossibleMoves.push(possibleMove)
+                      correctedPossibleMoves.push(possibleMove);
                     }
-                  })
-                })
+                  });
+                });
               }
             }
-          })
+          });
 
-          break
+          break;
       }
-    })
+    });
 
     const preparedMoves = kingBehidFigure
       ? correctedPossibleMoves
-      : possibleMoves
+      : possibleMoves;
 
     // Если линия с шахом только одна
     // то фигура способна зашитить короля
     if (linesWithCheck.length === 1) {
-      const correctedMovesForProtectKing: CellPos[] = []
+      const correctedMovesForProtectKing: CellPos[] = [];
 
-      const attackedLine = linesWithCheck[0]
+      const attackedLine = linesWithCheck[0];
 
       // Так как добавляется последней в линию атаки
       // TODO: поправить, так как непонятно
-      const attackerPos = attackedLine[attackedLine.length - 1]
+      const attackerPos = attackedLine[attackedLine.length - 1];
 
       attackedLine.forEach((attackedPos) => {
         preparedMoves.forEach((possibleMove) => {
@@ -831,22 +837,22 @@ export class JSChessEngine {
             // Необходимо добавить условие для того чтобы фигура - защитник
             // Обязательно находилась перед королем
           ) {
-            correctedMovesForProtectKing.push(possibleMove)
+            correctedMovesForProtectKing.push(possibleMove);
           }
-        })
-      })
+        });
+      });
 
-      return correctedMovesForProtectKing
+      return correctedMovesForProtectKing;
     }
 
     // Если двойной и более шах, то одна фигура не способна
     // защитить от нескольких линий атак
     // следовательно не можем делать ход фигурой
-    if (linesWithCheck.length > 1) return []
+    if (linesWithCheck.length > 1) return [];
 
     // Атаки на короля нет, фигуры могут свободно ходить
-    return preparedMoves
-  }
+    return preparedMoves;
+  };
 
   /**
    * Возвращает всю атакованную линию дальнобойной фигурой
@@ -859,110 +865,110 @@ export class JSChessEngine {
     figurePos: CellPos,
     direction: MoveDirection
   ) => {
-    let nextMove: CellPos
+    let nextMove: CellPos;
 
-    const attackedPositions: CellPos[] = []
+    const attackedPositions: CellPos[] = [];
 
     switch (direction) {
       case 'top-right':
-        nextMove = [figurePos[0] + 1, figurePos[1] - 1]
+        nextMove = [figurePos[0] + 1, figurePos[1] - 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] + 1, nextMove[1] - 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] + 1, nextMove[1] - 1];
         }
 
-        break
+        break;
 
       case 'bottom-right':
-        nextMove = [figurePos[0] + 1, figurePos[1] + 1]
+        nextMove = [figurePos[0] + 1, figurePos[1] + 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] + 1, nextMove[1] + 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] + 1, nextMove[1] + 1];
         }
 
-        break
+        break;
 
       case 'bottom-left':
-        nextMove = [figurePos[0] - 1, figurePos[1] + 1]
+        nextMove = [figurePos[0] - 1, figurePos[1] + 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] - 1, nextMove[1] + 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] - 1, nextMove[1] + 1];
         }
 
-        break
+        break;
 
       case 'top-left':
-        nextMove = [figurePos[0] - 1, figurePos[1] - 1]
+        nextMove = [figurePos[0] - 1, figurePos[1] - 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] - 1, nextMove[1] - 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] - 1, nextMove[1] - 1];
         }
 
-        break
+        break;
 
       case 'top':
-        nextMove = [figurePos[0], figurePos[1] - 1]
+        nextMove = [figurePos[0], figurePos[1] - 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0], nextMove[1] - 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0], nextMove[1] - 1];
         }
 
-        break
+        break;
 
       case 'right':
-        nextMove = [figurePos[0] + 1, figurePos[1]]
+        nextMove = [figurePos[0] + 1, figurePos[1]];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] + 1, nextMove[1]]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] + 1, nextMove[1]];
         }
 
-        break
+        break;
 
       case 'bottom':
-        nextMove = [figurePos[0], figurePos[1] + 1]
+        nextMove = [figurePos[0], figurePos[1] + 1];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0], nextMove[1] + 1]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0], nextMove[1] + 1];
         }
 
-        break
+        break;
 
       case 'left':
-        nextMove = [figurePos[0] - 1, figurePos[1]]
+        nextMove = [figurePos[0] - 1, figurePos[1]];
 
         while (
           JSChessEngine.checkPossibleAttackTo(state, figurePos, nextMove)
         ) {
-          attackedPositions.push(nextMove)
-          nextMove = [nextMove[0] - 1, nextMove[1]]
+          attackedPositions.push(nextMove);
+          nextMove = [nextMove[0] - 1, nextMove[1]];
         }
 
-        break
+        break;
     }
 
-    return attackedPositions
-  }
+    return attackedPositions;
+  };
 
   /**
    * Возвращает все атакованные врагом позиции
@@ -976,12 +982,12 @@ export class JSChessEngine {
     figurePos: CellPos,
     reverse: boolean
   ) => {
-    const enemysPos = JSChessEngine.getAllEnemysPositions(state, figurePos)
-    let attackedPositions: CellPos[] = []
+    const enemysPos = JSChessEngine.getAllEnemysPositions(state, figurePos);
+    let attackedPositions: CellPos[] = [];
 
     enemysPos.forEach(([i, j]) => {
-      const figure = state[j][i].figure!
-      const { type } = figure
+      const figure = state[j][i].figure!;
+      const { type } = figure;
 
       switch (type) {
         case 'pawn':
@@ -990,10 +996,10 @@ export class JSChessEngine {
             [i, j],
             reverse,
             JSChessEngine.checkAttackedCellByPawn
-          )
+          );
 
-          attackedPositions = [...attackedPositions, ...pawnAttackedPos]
-          break
+          attackedPositions = [...attackedPositions, ...pawnAttackedPos];
+          break;
 
         case 'bishop':
           const bishopAttackedPos = JSChessEngine.calcDiagonalMoves(
@@ -1003,20 +1009,20 @@ export class JSChessEngine {
             (state, _, targetPos) =>
               JSChessEngine.hasFigure(state, targetPos) &&
               !JSChessEngine.checkEnemyKing(state, [i, j], targetPos)
-          )
+          );
 
-          attackedPositions = [...attackedPositions, ...bishopAttackedPos]
-          break
+          attackedPositions = [...attackedPositions, ...bishopAttackedPos];
+          break;
 
         case 'knigts':
           const knigtAttackedPos = JSChessEngine.calcKnigtsMoves(
             state,
             [i, j],
             JSChessEngine.checkAttackedCell
-          )
+          );
 
-          attackedPositions = [...attackedPositions, ...knigtAttackedPos]
-          break
+          attackedPositions = [...attackedPositions, ...knigtAttackedPos];
+          break;
 
         case 'rook':
           const rookAttackedPos = JSChessEngine.calcHorizontalAndVerticalMoves(
@@ -1026,10 +1032,10 @@ export class JSChessEngine {
             (state, _, targetPos) =>
               JSChessEngine.hasFigure(state, targetPos) &&
               !JSChessEngine.checkEnemyKing(state, [i, j], targetPos)
-          )
+          );
 
-          attackedPositions = [...attackedPositions, ...rookAttackedPos]
-          break
+          attackedPositions = [...attackedPositions, ...rookAttackedPos];
+          break;
 
         case 'queen':
           const queenAttachedPosD = JSChessEngine.calcDiagonalMoves(
@@ -1039,7 +1045,7 @@ export class JSChessEngine {
             (state, _, targetPos) =>
               JSChessEngine.hasFigure(state, targetPos) &&
               !JSChessEngine.checkEnemyKing(state, [i, j], targetPos)
-          )
+          );
 
           const queenAttachedPosVH =
             JSChessEngine.calcHorizontalAndVerticalMoves(
@@ -1049,14 +1055,14 @@ export class JSChessEngine {
               (state, _, targetPos) =>
                 JSChessEngine.hasFigure(state, targetPos) &&
                 !JSChessEngine.checkEnemyKing(state, [i, j], targetPos)
-            )
+            );
 
           attackedPositions = [
             ...attackedPositions,
             ...queenAttachedPosD,
-            ...queenAttachedPosVH
-          ]
-          break
+            ...queenAttachedPosVH,
+          ];
+          break;
 
         case 'king':
           const kingAttackedPos = JSChessEngine.calcKingMoves(
@@ -1064,15 +1070,15 @@ export class JSChessEngine {
             [i, j],
             reverse,
             true
-          )
+          );
 
-          attackedPositions = [...attackedPositions, ...kingAttackedPos]
-          break
+          attackedPositions = [...attackedPositions, ...kingAttackedPos];
+          break;
       }
-    })
+    });
 
-    return attackedPositions
-  }
+    return attackedPositions;
+  };
 
   /**
    * Возвращает возможные позиция для движения по диагонали
@@ -1086,62 +1092,62 @@ export class JSChessEngine {
     onCheckPossible: OnCheckPossible = JSChessEngine.checkPossibleMoveTo,
     onCheckFigureInCell: OnCheckPossible = JSChessEngine.checkEnemy
   ) => {
-    const nextMoves: CellPos[] = []
+    const nextMoves: CellPos[] = [];
 
     // Влево-вверх
-    let nextMove: CellPos = [figurePos[0] - 1, figurePos[1] - 1]
+    let nextMove: CellPos = [figurePos[0] - 1, figurePos[1] - 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] - 1, nextMove[1] - 1]
+      nextMove = [nextMove[0] - 1, nextMove[1] - 1];
     }
 
     // Вправо-вверх
-    nextMove = [figurePos[0] + 1, figurePos[1] - 1]
+    nextMove = [figurePos[0] + 1, figurePos[1] - 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] + 1, nextMove[1] - 1]
+      nextMove = [nextMove[0] + 1, nextMove[1] - 1];
     }
 
     // Влево-вниз
-    nextMove = [figurePos[0] + 1, figurePos[1] + 1]
+    nextMove = [figurePos[0] + 1, figurePos[1] + 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] + 1, nextMove[1] + 1]
+      nextMove = [nextMove[0] + 1, nextMove[1] + 1];
     }
 
     // Вправо-вниз
-    nextMove = [figurePos[0] - 1, figurePos[1] + 1]
+    nextMove = [figurePos[0] - 1, figurePos[1] + 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] - 1, nextMove[1] + 1]
+      nextMove = [nextMove[0] - 1, nextMove[1] + 1];
     }
 
-    return nextMoves
-  }
+    return nextMoves;
+  };
 
   /**
    * Возвращает возможные позиция для движения по горизонтали и вертикали
@@ -1156,62 +1162,62 @@ export class JSChessEngine {
     onCheckPossible: OnCheckPossible = JSChessEngine.checkPossibleMoveTo,
     onCheckFigureInCell: OnCheckPossible = JSChessEngine.checkEnemy
   ) => {
-    const nextMoves: CellPos[] = []
+    const nextMoves: CellPos[] = [];
 
     // Влево
-    let nextMove: CellPos = [figurePos[0] - 1, figurePos[1]]
+    let nextMove: CellPos = [figurePos[0] - 1, figurePos[1]];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] - 1, nextMove[1]]
+      nextMove = [nextMove[0] - 1, nextMove[1]];
     }
 
     // Вверх
-    nextMove = [figurePos[0], figurePos[1] - 1]
+    nextMove = [figurePos[0], figurePos[1] - 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0], nextMove[1] - 1]
+      nextMove = [nextMove[0], nextMove[1] - 1];
     }
 
     // Вправо
-    nextMove = [figurePos[0] + 1, figurePos[1]]
+    nextMove = [figurePos[0] + 1, figurePos[1]];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0] + 1, nextMove[1]]
+      nextMove = [nextMove[0] + 1, nextMove[1]];
     }
 
     // Вниз
-    nextMove = [figurePos[0], figurePos[1] + 1]
+    nextMove = [figurePos[0], figurePos[1] + 1];
 
     while (onCheckPossible(state, figurePos, nextMove)) {
-      nextMoves.push([...nextMove])
+      nextMoves.push([...nextMove]);
 
       if (onCheckFigureInCell(state, figurePos, nextMove)) {
-        break
+        break;
       }
 
-      nextMove = [nextMove[0], nextMove[1] + 1]
+      nextMove = [nextMove[0], nextMove[1] + 1];
     }
 
-    return nextMoves
-  }
+    return nextMoves;
+  };
 
   /**
    * Возвращает возможные ходы для коня
@@ -1224,7 +1230,7 @@ export class JSChessEngine {
     figurePos: CellPos,
     onCheckPossible: OnCheckPossible = JSChessEngine.checkPossibleMoveTo
   ) => {
-    const nextMoves: CellPos[] = []
+    const nextMoves: CellPos[] = [];
 
     const possibleMoves: CellPos[] = [
       [figurePos[0] + 1, figurePos[1] - 2],
@@ -1234,17 +1240,17 @@ export class JSChessEngine {
       [figurePos[0] + 2, figurePos[1] + 1],
       [figurePos[0] + 2, figurePos[1] - 1],
       [figurePos[0] + 1, figurePos[1] + 2],
-      [figurePos[0] - 1, figurePos[1] + 2]
-    ]
+      [figurePos[0] - 1, figurePos[1] + 2],
+    ];
 
     possibleMoves.forEach((move) => {
       if (onCheckPossible(state, figurePos, move)) {
-        nextMoves.push(move)
+        nextMoves.push(move);
       }
-    })
+    });
 
-    return nextMoves
-  }
+    return nextMoves;
+  };
 
   /**
    * Проверяет возможность пешки пойти на клетку - цель
@@ -1271,20 +1277,20 @@ export class JSChessEngine {
             pos[1] === 1 &&
             !JSChessEngine.hasFigure(state, [
               target.pos[0],
-              target.pos[1] - 1
+              target.pos[1] - 1,
             ]) &&
             !JSChessEngine.hasFigure(state, target.pos)
-          )
+          );
         }
 
         return (
           pos[1] === state.length - 2 &&
           !JSChessEngine.hasFigure(state, [target.pos[0], target.pos[1] + 1]) &&
           !JSChessEngine.hasFigure(state, target.pos)
-        )
+        );
 
       case 'default':
-        return !JSChessEngine.hasFigure(state, target.pos)
+        return !JSChessEngine.hasFigure(state, target.pos);
 
       case 'attack':
         return (
@@ -1295,9 +1301,9 @@ export class JSChessEngine {
           // Если поле битое
           (JSChessEngine.checkInBorderBoard(state, target.pos) &&
             JSChessEngine.checkBeatedCell(state, target.pos))
-        )
+        );
     }
-  }
+  };
 
   /**
    * Возвращает возможные позиции для пешки
@@ -1314,8 +1320,8 @@ export class JSChessEngine {
       | typeof JSChessEngine.checkPossiblePawnMoveToPos
       | typeof JSChessEngine.checkAttackedCellByPawn = JSChessEngine.checkPossiblePawnMoveToPos
   ) => {
-    const pawnColor = JSChessEngine.getFigureColor(state, figurePos)
-    const nextMoves: CellPos[] = []
+    const pawnColor = JSChessEngine.getFigureColor(state, figurePos);
+    const nextMoves: CellPos[] = [];
 
     // Возможные позиции для пешки
     const possibleMoves: MoveByPawn[] = [
@@ -1329,8 +1335,8 @@ export class JSChessEngine {
       { typeMove: 'attack', pos: [figurePos[0] - 1, figurePos[1] - 1] },
 
       // Атака
-      { typeMove: 'attack', pos: [figurePos[0] + 1, figurePos[1] - 1] }
-    ]
+      { typeMove: 'attack', pos: [figurePos[0] + 1, figurePos[1] - 1] },
+    ];
 
     // В обычном состоянии это возможные ходы за черных
     // с параметром reverse = true возможные ходы за белых
@@ -1345,23 +1351,23 @@ export class JSChessEngine {
       { typeMove: 'attack', pos: [figurePos[0] - 1, figurePos[1] + 1] },
 
       // Атака
-      { typeMove: 'attack', pos: [figurePos[0] + 1, figurePos[1] + 1] }
-    ]
+      { typeMove: 'attack', pos: [figurePos[0] + 1, figurePos[1] + 1] },
+    ];
 
     // Если цвет пещки белый и доска не перевернута ИЛИ цвет пешки черный и доска перевернута => используем обычные ходы
     // Иначе используем перевернутые ходы
     const possibleMovesForColor =
       (pawnColor === 'white' && !revese) || (pawnColor === 'black' && revese)
         ? possibleMoves
-        : possibleMovesReverse
+        : possibleMovesReverse;
 
     possibleMovesForColor.forEach((move) => {
       onCheckPossible(state, figurePos, move, pawnColor, revese) &&
-        nextMoves.push(move.pos)
-    })
+        nextMoves.push(move.pos);
+    });
 
-    return nextMoves
-  }
+    return nextMoves;
+  };
 
   /**
    * Проверяет возможна ли рокеровка
@@ -1380,69 +1386,69 @@ export class JSChessEngine {
       !!state[kingPos[1]][kingPos[0]].figure &&
       state[kingPos[1]][kingPos[0]].figure?.touched
     )
-      return false
+      return false;
 
     // Проверка на атакованы ли поля для рокеровки
     // Если хоть одно поле кроме для рокеровки атаковано (кроме поля на котором ладья)
     // и если атакован король
     // то рокеровка невозможна
     const allAttackedPositionsByEnemys =
-      JSChessEngine.getAllAttckedPostionsByEnemys(state, kingPos, reverse)
+      JSChessEngine.getAllAttckedPostionsByEnemys(state, kingPos, reverse);
 
     const foundCheckKingPos = allAttackedPositionsByEnemys.find(
       (attackedPos) =>
         attackedPos[0] === kingPos[0] && attackedPos[1] === kingPos[1]
-    )
+    );
 
-    if (foundCheckKingPos) return false
+    if (!!foundCheckKingPos) return false;
 
     // Если ладью перемещали - рокеровка невозможна
     // figurePos[1] - горизонталь на которой изначально находится короля
     // на ней же должны находиться ладьи
-    const castlingPathWithoutRook = [...castlingPath]
-    const rookPos = castlingPathWithoutRook.pop()
+    const castlingPathWithoutRook = [...castlingPath];
+    const rookPos = castlingPathWithoutRook.pop();
 
     if (
       !state[rookPos![1]][rookPos![0]] ||
       !state[rookPos![1]][rookPos![0]].figure
     )
-      return false
+      return false;
 
     if (
       !!state[rookPos![1]][rookPos![0]].figure &&
       state[rookPos![1]][rookPos![0]].figure?.touched
     )
-      return false
+      return false;
 
     // Если на пути рокеровки есть фигуры - рокеровка невохможна
     const castlinPathWithFigures = castlingPathWithoutRook.filter(
       (castlingPos) => JSChessEngine.hasFigure(state, castlingPos)
-    )
+    );
 
-    if (castlinPathWithFigures.length > 0) return false
+    if (castlinPathWithFigures.length > 0) return false;
 
-    let isPossibleCastling = true
+    let isPossibleCastling = true;
 
     for (let i = 0; i < allAttackedPositionsByEnemys.length; i++) {
-      const attackedPos = allAttackedPositionsByEnemys[i]
+      const attackedPos = allAttackedPositionsByEnemys[i];
 
       for (let j = 0; j < castlingPathWithoutRook.length; j++) {
-        const castlingPos = castlingPathWithoutRook[j]
+        const castlingPos = castlingPathWithoutRook[j];
 
         if (
           castlingPos[0] === attackedPos[0] &&
           castlingPos[1] === attackedPos[1]
         ) {
-          isPossibleCastling = false
-          break
+          isPossibleCastling = false;
+          break;
         }
       }
 
-      if (!isPossibleCastling) break
+      if (!isPossibleCastling) break;
     }
 
-    return isPossibleCastling
-  }
+    return isPossibleCastling;
+  };
 
   /**
    * Возвращает возможные ходы для короля
@@ -1456,7 +1462,7 @@ export class JSChessEngine {
     reverse: boolean,
     onlyAttacks: boolean = false
   ) => {
-    const nextMoves: CellPos[] = []
+    const nextMoves: CellPos[] = [];
 
     const possibleMoves: CellPos[] = [
       [figurePos[0], figurePos[1] - 1],
@@ -1466,60 +1472,62 @@ export class JSChessEngine {
       [figurePos[0], figurePos[1] + 1],
       [figurePos[0] - 1, figurePos[1] + 1],
       [figurePos[0] - 1, figurePos[1]],
-      [figurePos[0] - 1, figurePos[1] - 1]
-    ]
+      [figurePos[0] - 1, figurePos[1] - 1],
+    ];
 
     // Для короткой рокеровки
     const castlingMovesDefault: CellPos[] = [
       [figurePos[0] + 1, figurePos[1]],
       [figurePos[0] + 2, figurePos[1]],
-      [figurePos[0] + 3, figurePos[1]]
-    ]
+      [figurePos[0] + 3, figurePos[1]],
+    ];
 
     // Для длинной рокеровки
     const longCastlingMovesDefault: CellPos[] = [
       [figurePos[0] - 1, figurePos[1]],
       [figurePos[0] - 2, figurePos[1]],
       [figurePos[0] - 3, figurePos[1]],
-      [figurePos[0] - 4, figurePos[1]]
-    ]
+      [figurePos[0] - 4, figurePos[1]],
+    ];
 
     // Для короткой рокеровки (доска развернута)
     const castlingMovesReversed: CellPos[] = [
       [figurePos[0] - 1, figurePos[1]],
       [figurePos[0] - 2, figurePos[1]],
-      [figurePos[0] - 3, figurePos[1]]
-    ]
+      [figurePos[0] - 3, figurePos[1]],
+    ];
 
     // Для длинной рокеровки (доска развернута)
     const longCastlingMovesReversed: CellPos[] = [
       [figurePos[0] + 1, figurePos[1]],
       [figurePos[0] + 2, figurePos[1]],
       [figurePos[0] + 3, figurePos[1]],
-      [figurePos[0] + 4, figurePos[1]]
-    ]
+      [figurePos[0] + 4, figurePos[1]],
+    ];
 
-    const castlingMoves = reverse ? castlingMovesReversed : castlingMovesDefault
+    const castlingMoves = reverse
+      ? castlingMovesReversed
+      : castlingMovesDefault;
     const longCastlingMoves = reverse
       ? longCastlingMovesReversed
-      : longCastlingMovesDefault
+      : longCastlingMovesDefault;
 
-    if (onlyAttacks) return possibleMoves
+    if (onlyAttacks) return possibleMoves;
 
     const allAttackedPositionsByEnemys =
-      JSChessEngine.getAllAttckedPostionsByEnemys(state, figurePos, reverse)
+      JSChessEngine.getAllAttckedPostionsByEnemys(state, figurePos, reverse);
 
     possibleMoves.forEach((move) => {
       if (JSChessEngine.checkPossibleMoveTo(state, figurePos, move)) {
         const foundInAttacked = allAttackedPositionsByEnemys.find(
           (attackedMove) =>
             attackedMove[0] === move[0] && attackedMove[1] === move[1]
-        )
+        );
 
         // Если возможный ход не найден в полях находящихся под атакой, то добавляем его в возможные ходы короля
-        foundInAttacked === undefined && nextMoves.push(move)
+        foundInAttacked === undefined && nextMoves.push(move);
       }
-    })
+    });
 
     // Проверка на возможность рокеровки
     // 1. Король не перемещался
@@ -1534,7 +1542,7 @@ export class JSChessEngine {
         reverse
       )
     ) {
-      castlingMoves.forEach((castlingPos) => nextMoves.push(castlingPos))
+      castlingMoves.forEach((castlingPos) => nextMoves.push(castlingPos));
     }
 
     if (
@@ -1545,48 +1553,48 @@ export class JSChessEngine {
         reverse
       )
     ) {
-      longCastlingMoves.forEach((castlingPos) => nextMoves.push(castlingPos))
+      longCastlingMoves.forEach((castlingPos) => nextMoves.push(castlingPos));
     }
 
-    return nextMoves
-  }
+    return nextMoves;
+  };
 
   static getNextMovesPawn = (
     state: Cell[][],
     figurePos: CellPos,
     reverse: boolean
   ) => {
-    return JSChessEngine.calcPawnMoves(state, figurePos, reverse)
-  }
+    return JSChessEngine.calcPawnMoves(state, figurePos, reverse);
+  };
 
   static getNextMovesBishop = (state: Cell[][], figurePos: CellPos) => {
-    return JSChessEngine.calcDiagonalMoves(state, figurePos)
-  }
+    return JSChessEngine.calcDiagonalMoves(state, figurePos);
+  };
 
   static getNextMovesKnigts = (state: Cell[][], figurePos: CellPos) => {
-    return JSChessEngine.calcKnigtsMoves(state, figurePos)
-  }
+    return JSChessEngine.calcKnigtsMoves(state, figurePos);
+  };
 
   static getNextMovesRook = (state: Cell[][], figurePos: CellPos) => {
-    return JSChessEngine.calcHorizontalAndVerticalMoves(state, figurePos)
-  }
+    return JSChessEngine.calcHorizontalAndVerticalMoves(state, figurePos);
+  };
 
   static getNextMovesQueen = (state: Cell[][], figurePos: CellPos) => {
-    const diagonalMoves = JSChessEngine.calcDiagonalMoves(state, figurePos)
+    const diagonalMoves = JSChessEngine.calcDiagonalMoves(state, figurePos);
     const verticalAndHorizontalMoves =
-      JSChessEngine.calcHorizontalAndVerticalMoves(state, figurePos)
-    const moves = [...diagonalMoves, ...verticalAndHorizontalMoves]
+      JSChessEngine.calcHorizontalAndVerticalMoves(state, figurePos);
+    const moves = [...diagonalMoves, ...verticalAndHorizontalMoves];
 
-    return moves
-  }
+    return moves;
+  };
 
   static getNextMovesKing = (
     state: Cell[][],
     figurePos: CellPos,
     reverse: boolean
   ) => {
-    return JSChessEngine.calcKingMoves(state, figurePos, reverse)
-  }
+    return JSChessEngine.calcKingMoves(state, figurePos, reverse);
+  };
 
   /**
    * Возвращает линии по которым есть шах вражескому королю
@@ -1601,12 +1609,12 @@ export class JSChessEngine {
     const posTeammates = JSChessEngine.getAllTeammatesPositionsByColor(
       state,
       activeColor
-    )
+    );
 
-    const linesWithCheck: CellPos[][] = []
+    const linesWithCheck: CellPos[][] = [];
 
     posTeammates.forEach((pos) => {
-      const figureType = JSChessEngine.getFigureType(state, pos)
+      const figureType = JSChessEngine.getFigureType(state, pos);
 
       switch (figureType) {
         case 'bishop':
@@ -1615,12 +1623,12 @@ export class JSChessEngine {
               state,
               pos,
               direction
-            )
+            );
 
-            let hasAttackedEnemyKing = false
+            let hasAttackedEnemyKing = false;
 
             for (let i = 0; i < attackedLineBishop.length; i++) {
-              const attackedPos = attackedLineBishop[i]
+              const attackedPos = attackedLineBishop[i];
 
               // Проверяем атакованную позицию
               // Если клетка пустая, то продолжаем проверять
@@ -1629,24 +1637,24 @@ export class JSChessEngine {
                 JSChessEngine.hasFigure(state, attackedPos) &&
                 !JSChessEngine.checkEnemyKing(state, pos, attackedPos)
               ) {
-                break
+                break;
               }
 
               // Если доходим до короля, перываем цикл и отмечаем
               // что линия имеет атакованного короля - объявлен шах
               if (JSChessEngine.checkEnemyKing(state, pos, attackedPos)) {
-                hasAttackedEnemyKing = true
-                break
+                hasAttackedEnemyKing = true;
+                break;
               }
             }
 
             // Если линия имеет атакованного короля, добавляем ее в линии с шахами
             if (hasAttackedEnemyKing) {
-              linesWithCheck.push([...attackedLineBishop, pos])
+              linesWithCheck.push([...attackedLineBishop, pos]);
             }
-          })
+          });
 
-          break
+          break;
 
         case 'rook':
           DIRECTIONS_VH.forEach((direction) => {
@@ -1654,12 +1662,12 @@ export class JSChessEngine {
               state,
               pos,
               direction
-            )
+            );
 
-            let hasAttackedEnemyKing = false
+            let hasAttackedEnemyKing = false;
 
             for (let i = 0; i < attackedLineRook.length; i++) {
-              const attackedPos = attackedLineRook[i]
+              const attackedPos = attackedLineRook[i];
 
               // Проверяем атакованную позицию
               // Если клетка пустая, то продолжаем проверять
@@ -1668,37 +1676,37 @@ export class JSChessEngine {
                 JSChessEngine.hasFigure(state, attackedPos) &&
                 !JSChessEngine.checkEnemyKing(state, pos, attackedPos)
               ) {
-                break
+                break;
               }
 
               // Если доходим до короля, перываем цикл и отмечаем
               // что линия имеет атакованного короля - объявлен шах
               if (JSChessEngine.checkEnemyKing(state, pos, attackedPos)) {
-                hasAttackedEnemyKing = true
-                break
+                hasAttackedEnemyKing = true;
+                break;
               }
             }
 
             // Если линия имеет атакованного короля, добавляем ее в линии с шахами
             if (hasAttackedEnemyKing) {
-              linesWithCheck.push([...attackedLineRook, pos])
+              linesWithCheck.push([...attackedLineRook, pos]);
             }
-          })
+          });
 
-          break
+          break;
 
         case 'queen':
-          ;[...DIRECTIONS_D, ...DIRECTIONS_VH].forEach((direction) => {
+          [...DIRECTIONS_D, ...DIRECTIONS_VH].forEach((direction) => {
             const attackedLineQueen = JSChessEngine.getFullAttackedLine(
               state,
               pos,
               direction
-            )
+            );
 
-            let hasAttackedEnemyKing = false
+            let hasAttackedEnemyKing = false;
 
             for (let i = 0; i < attackedLineQueen.length; i++) {
-              const attackedPos = attackedLineQueen[i]
+              const attackedPos = attackedLineQueen[i];
 
               // Проверяем атакованную позицию
               // Если клетка пустая, то продолжаем проверять
@@ -1707,37 +1715,37 @@ export class JSChessEngine {
                 JSChessEngine.hasFigure(state, attackedPos) &&
                 !JSChessEngine.checkEnemyKing(state, pos, attackedPos)
               ) {
-                break
+                break;
               }
 
               // Если доходим до короля, перываем цикл и отмечаем
               // что линия имеет атакованного короля - объявлен шах
               if (JSChessEngine.checkEnemyKing(state, pos, attackedPos)) {
-                hasAttackedEnemyKing = true
-                break
+                hasAttackedEnemyKing = true;
+                break;
               }
             }
 
             // Если линия имеет атакованного короля, добавляем ее в линии с шахами
             if (hasAttackedEnemyKing) {
-              linesWithCheck.push([...attackedLineQueen, pos])
+              linesWithCheck.push([...attackedLineQueen, pos]);
             }
-          })
+          });
 
-          break
+          break;
 
         case 'pawn':
-          const pawnAttackedPositions: CellPos[] = []
+          const pawnAttackedPositions: CellPos[] = [];
 
           if (
             (reverse && activeColor === 'white') ||
             (!reverse && activeColor === 'black')
           ) {
             // Вниз-вправо
-            pawnAttackedPositions.push([pos[0] + 1, pos[1] + 1])
+            pawnAttackedPositions.push([pos[0] + 1, pos[1] + 1]);
 
             // Вниз-влево
-            pawnAttackedPositions.push([pos[0] - 1, pos[1] + 1])
+            pawnAttackedPositions.push([pos[0] - 1, pos[1] + 1]);
           }
 
           if (
@@ -1745,10 +1753,10 @@ export class JSChessEngine {
             (!reverse && activeColor === 'white')
           ) {
             // Вверх-вправо
-            pawnAttackedPositions.push([pos[0] + 1, pos[1] - 1])
+            pawnAttackedPositions.push([pos[0] + 1, pos[1] - 1]);
 
             // Вверх-влево
-            pawnAttackedPositions.push([pos[0] - 1, pos[1] - 1])
+            pawnAttackedPositions.push([pos[0] - 1, pos[1] - 1]);
           }
 
           pawnAttackedPositions.forEach((attackedPos) => {
@@ -1758,11 +1766,11 @@ export class JSChessEngine {
               // И в клетке есть вражеский король
               JSChessEngine.checkEnemyKing(state, pos, attackedPos)
             ) {
-              linesWithCheck.push([attackedPos, pos])
+              linesWithCheck.push([attackedPos, pos]);
             }
-          })
+          });
 
-          break
+          break;
 
         case 'knigts':
           const knigtAttackedPositions: CellPos[] = [
@@ -1773,8 +1781,8 @@ export class JSChessEngine {
             [pos[0] + 2, pos[1] + 1],
             [pos[0] + 2, pos[1] - 1],
             [pos[0] + 1, pos[1] + 2],
-            [pos[0] - 1, pos[1] + 2]
-          ]
+            [pos[0] - 1, pos[1] + 2],
+          ];
 
           knigtAttackedPositions.forEach((attackedPos) => {
             if (
@@ -1783,16 +1791,16 @@ export class JSChessEngine {
               // И в клетке есть вражеский король
               JSChessEngine.checkEnemyKing(state, pos, attackedPos)
             ) {
-              linesWithCheck.push([attackedPos, pos])
+              linesWithCheck.push([attackedPos, pos]);
             }
-          })
+          });
 
-          break
+          break;
       }
-    })
+    });
 
-    return linesWithCheck
-  }
+    return linesWithCheck;
+  };
 
   /**
    * Принимает данные о фигуре, которой сыграли
@@ -1811,22 +1819,22 @@ export class JSChessEngine {
     targetPos: CellPos,
     prevPos: CellPos,
     reverse: boolean
-  ): { updatedCells: Cell[][]; attackedPos?: CellPos } => {
+  ): { updatedCells: Cell[][], attackedPos?: CellPos } => {
     // Необходимо для записи атакованного поля
     // на данный момент нужно для того чтобы
     // записать какое было атаковано при переходе на битую позицию
     // чтобы корректно показать анимированный переход на битое поле
-    let attackedPos: CellPos | undefined
+    let attackedPos: CellPos | undefined = undefined;
 
     // Для определения рокировки
-    const diffHorizontal = targetPos[0] - prevPos[0]
+    const diffHorizontal = targetPos[0] - prevPos[0];
 
     if (currentFigure.type === 'pawn') {
       // Если пешка дошла до конца доски
       // Превратить ее в выбранную фигуру
       // ферзь, ладья, слон, конь
       if (targetPos[1] === 0 || targetPos[1] === state.length - 1) {
-        console.log('TRNASFORM')
+        // console.log('TRNASFORM');
       }
     }
 
@@ -1844,9 +1852,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'rook',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (j === prevPos[1] && i === 5) {
@@ -1855,9 +1863,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'king',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (
@@ -1866,15 +1874,15 @@ export class JSChessEngine {
               ) {
                 return {
                   ...cell,
-                  figure: undefined
-                }
+                  figure: undefined,
+                };
               }
 
-              return cell
+              return cell;
             })
-          )
+          );
 
-          return { updatedCells, attackedPos }
+          return { updatedCells, attackedPos };
         } else {
           // 0-0
           const updatedCells: Cell[][] = state.map((row, j) =>
@@ -1885,9 +1893,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'rook',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (j === prevPos[1] && i === 6) {
@@ -1896,9 +1904,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'king',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (
@@ -1907,15 +1915,15 @@ export class JSChessEngine {
               ) {
                 return {
                   ...cell,
-                  figure: undefined
-                }
+                  figure: undefined,
+                };
               }
 
-              return cell
+              return cell;
             })
-          )
+          );
 
-          return { updatedCells, attackedPos }
+          return { updatedCells, attackedPos };
         }
       }
 
@@ -1930,9 +1938,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'rook',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (j === prevPos[1] && i === 1) {
@@ -1941,9 +1949,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'king',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (
@@ -1952,15 +1960,15 @@ export class JSChessEngine {
               ) {
                 return {
                   ...cell,
-                  figure: undefined
-                }
+                  figure: undefined,
+                };
               }
 
-              return cell
+              return cell;
             })
-          )
+          );
 
-          return { updatedCells, attackedPos }
+          return { updatedCells, attackedPos };
         } else {
           // 0-0-0
           const updatedCells: Cell[][] = state.map((row, j) =>
@@ -1971,9 +1979,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'rook',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (j === prevPos[1] && i === 2) {
@@ -1982,9 +1990,9 @@ export class JSChessEngine {
                   figure: {
                     type: 'king',
                     color: currentFigure.color,
-                    touched: true
-                  }
-                }
+                    touched: true,
+                  },
+                };
               }
 
               if (
@@ -1993,15 +2001,15 @@ export class JSChessEngine {
               ) {
                 return {
                   ...cell,
-                  figure: undefined
-                }
+                  figure: undefined,
+                };
               }
 
-              return cell
+              return cell;
             })
-          )
+          );
 
-          return { updatedCells, attackedPos }
+          return { updatedCells, attackedPos };
         }
       }
     }
@@ -2012,15 +2020,15 @@ export class JSChessEngine {
           return {
             figure: {
               ...currentFigure,
-              touched: true
-            }
-          }
+              touched: true,
+            },
+          };
         }
 
         if (prevPos[0] === i && prevPos[1] === j) {
           return {
-            figure: undefined
-          }
+            figure: undefined,
+          };
         }
 
         // Если сходили пешкой на битое поле,
@@ -2030,33 +2038,33 @@ export class JSChessEngine {
           currentFigure.type === 'pawn' &&
           JSChessEngine.checkBeatedCell(state, targetPos) &&
           j === prevPos[1] &&
-          i === targetPos[0] // these
+          i === targetPos[0] //these
         ) {
-          attackedPos = [i, j]
-          return { figure: undefined, beated: false }
+          attackedPos = [i, j];
+          return { figure: undefined, beated: false };
         }
 
         // Если пешка сходила на две клетки вперед
         // то помечаем поле как битое
         if (currentFigure.type === 'pawn') {
-          const diff = targetPos[1] - prevPos[1]
+          const diff = targetPos[1] - prevPos[1];
 
           if (Math.abs(diff) === 2) {
             if (
               (diff > 0 && j === targetPos[1] - 1 && targetPos[0] === i) ||
               (diff < 0 && j === targetPos[1] + 1 && targetPos[0] === i)
             ) {
-              return { figure: undefined, beated: true }
+              return { figure: undefined, beated: true };
             }
           }
         }
 
-        return { ...cell, beated: cell.beated ? false : cell.beated }
+        return { ...cell, beated: cell.beated ? false : cell.beated };
       })
-    )
+    );
 
-    return { updatedCells, attackedPos }
-  }
+    return { updatedCells, attackedPos };
+  };
 
   /**
    * Обновляет состояние с превращение пешки в фигуру
@@ -2071,46 +2079,46 @@ export class JSChessEngine {
     targetPos: CellPos,
     transformFigure: Figure
   ): Cell[][] => {
-    const preparedState = [...state]
+    const preparedState = [...state];
 
     return preparedState.map((row, j) =>
       row.map((cell, i) => {
         if (i === fromPos[0] && j === fromPos[1]) {
           return {
             beated: false,
-            figure: undefined
-          }
+            figure: undefined,
+          };
         }
 
         if (i === targetPos[0] && j === targetPos[1]) {
           return {
             beated: false,
-            figure: transformFigure
-          }
+            figure: transformFigure,
+          };
         }
 
-        return { ...cell }
+        return { ...cell };
       })
-    )
-  }
+    );
+  };
 
   /**
    * Возвращает плоский массив полей с фигурами
    * @param state состояние доски
    */
   static getFieldsWithFigures = (state: Cell[][]) => {
-    const fieldsWithFigures: Cell[] = []
+    const fieldsWithFigures: Cell[] = [];
 
     state.forEach((row) =>
       row.forEach((cell) => {
-        if (cell.figure) {
-          fieldsWithFigures.push(cell)
+        if (!!cell.figure) {
+          fieldsWithFigures.push(cell);
         }
       })
-    )
+    );
 
-    return fieldsWithFigures
-  }
+    return fieldsWithFigures;
+  };
 
   /**
    * Возвращает результат игры
@@ -2130,16 +2138,16 @@ export class JSChessEngine {
     const posTeammates = JSChessEngine.getAllTeammatesPositionsByColor(
       state,
       activeColor
-    )
+    );
 
     // Проверка на ничью
     // если на поле остались только короли
     // или одна из фигур любого цвеат - конь, слон
     // то это автоматическая ничья
-    const cellsWithFigures = JSChessEngine.getFieldsWithFigures(state)
+    const cellsWithFigures = JSChessEngine.getFieldsWithFigures(state);
 
     // Значит остались только короли на доске
-    if (cellsWithFigures.length === 2) return { resultType: 'draw' }
+    if (cellsWithFigures.length === 2) return { resultType: 'draw' };
 
     // На доске осталось три фигуры
     // два короля и еще одна, если эта
@@ -2149,16 +2157,16 @@ export class JSChessEngine {
       const figureForCommon = cellsWithFigures.find(
         (cell) =>
           cell.figure?.type === 'knigts' || cell.figure?.type === 'bishop'
-      )
+      );
 
-      if (figureForCommon) return { resultType: 'draw' }
+      if (!!figureForCommon) return { resultType: 'draw' };
     }
 
     // Массив с количеством ходов каждой фигуры
     // Если все элементы массива - 0 и есть атака на короля, то это мат
     // Если атаки на короля нет, но все элементы массива - 0, это пат
     // если есть ходы, то игра продолжается
-    const countsNextMoves: number[] = []
+    const countsNextMoves: number[] = [];
 
     posTeammates.forEach((pos) => {
       const nextMoves = JSChessEngine.getNextMoves(
@@ -2166,25 +2174,28 @@ export class JSChessEngine {
         pos,
         linesWithCheck,
         reverse
-      )
-      countsNextMoves.push(nextMoves.length)
-    })
+      );
+      countsNextMoves.push(nextMoves.length);
+    });
 
     // Суммируем все значения
     const countsSumResult = countsNextMoves.reduce(
       (prevValue, curentValue) => prevValue + curentValue
-    )
+    );
 
     // Мат
     if (linesWithCheck.length > 0 && countsSumResult === 0)
-      return { resultType: 'mat', winColor: activeColor }
+      return {
+        resultType: 'mat',
+        winColor: activeColor === 'white' ? 'black' : 'white',
+      };
 
     // Пат
     if (linesWithCheck.length === 0 && countsSumResult === 0)
-      return { resultType: 'pat' }
+      return { resultType: 'pat' };
 
-    return undefined
-  }
+    return undefined;
+  };
 
   /**
    * Возвращает количество фигур указанного типа
@@ -2197,11 +2208,11 @@ export class JSChessEngine {
   ) => {
     const filtred = flatState.filter(
       ({ figure }) => figure?.type === figureType
-    )
-    const count = filtred.length
+    );
+    const count = filtred.length;
 
-    return count
-  }
+    return count;
+  };
 
   /**
    * Возвращает информацию о количестве съеденных фигур одного цвета
@@ -2213,17 +2224,17 @@ export class JSChessEngine {
     color: FigureColor,
     countsConfig: typeof FIGURES_COUNTS = FIGURES_COUNTS
   ) => {
-    let cellsWithFigures: Cell[] = []
+    let cellsWithFigures: Cell[] = [];
 
     state.forEach((row) => {
       const filtredCells = row.filter(
         (cell) => !!cell.figure && cell.figure.color === color
-      )
+      );
 
       if (filtredCells.length > 0) {
-        cellsWithFigures = [...cellsWithFigures, ...filtredCells]
+        cellsWithFigures = [...cellsWithFigures, ...filtredCells];
       }
-    })
+    });
 
     // информация о съеденных фигурах
     const beatedCountsData: BeatedCountsData = {
@@ -2241,11 +2252,11 @@ export class JSChessEngine {
         JSChessEngine.getFiguresCountByType(cellsWithFigures, 'rook'),
       queen:
         countsConfig.QUEENS_COUNT -
-        JSChessEngine.getFiguresCountByType(cellsWithFigures, 'queen')
-    }
+        JSChessEngine.getFiguresCountByType(cellsWithFigures, 'queen'),
+    };
 
-    return beatedCountsData
-  }
+    return beatedCountsData;
+  };
 
   /**
    * По последним шести позициям - трем ходам
@@ -2258,20 +2269,20 @@ export class JSChessEngine {
    * @param fenMoves история ходов в формате FEN
    */
   static detectDrawByRepeatMoves(fenMoves: string[]) {
-    if (fenMoves.length < 8) return false
+    if (fenMoves.length < 8) return false;
 
-    const lastMoves = fenMoves.slice(fenMoves.length - 8)
+    const lastMoves = fenMoves.slice(fenMoves.length - 8);
 
     // Для понимания было троекратное повторение или нет, нужно
     // первые четыре хода и последние четыре хода из выборки
     // объединить в строку и сравнить полученные строки
-    const firstFromSelectedMoves = lastMoves.slice(0, 4)
-    const lastFromSelectedMoves = lastMoves.slice(4)
+    const firstFromSelectedMoves = lastMoves.slice(0, 4);
+    const lastFromSelectedMoves = lastMoves.slice(4);
 
-    const firstResultsFENs = firstFromSelectedMoves.join('')
-    const lastResultsFENs = lastFromSelectedMoves.join('')
+    const firstResultsFENs = firstFromSelectedMoves.join('');
+    const lastResultsFENs = lastFromSelectedMoves.join('');
 
-    return firstResultsFENs === lastResultsFENs
+    return firstResultsFENs === lastResultsFENs;
   }
 
   /**
@@ -2279,17 +2290,18 @@ export class JSChessEngine {
    * @param move данные хода
    */
   static getCastlingType(move: MoveData): CastlingType | undefined {
-    if (move.figure.touched || move.figure.type !== 'king') return undefined
+    if (move.figure.touched || move.figure.type !== 'king') return undefined;
 
     // Разница в ходе по горизонтали
-    const horizontalDiff = move.to[0] - move.from[0]
+    const horizontalDiff = move.to[0] - move.from[0];
 
     // Король просто сходил => рокировки не было
-    if (horizontalDiff === 0 || Math.abs(horizontalDiff) === 1) return undefined
+    if (horizontalDiff === 0 || Math.abs(horizontalDiff) === 1)
+      return undefined;
 
     // Рокировались вправо
-    if (horizontalDiff > 0) return '0-0'
+    if (horizontalDiff > 0) return '0-0';
 
-    return '0-0-0'
+    return '0-0-0';
   }
 }

@@ -1,4 +1,4 @@
-import { FENtoGameState, FigureColor, MoveData } from "../JSChessEngine";
+import { FENtoGameState, FigureColor, GameResult, MoveData } from "../JSChessEngine";
 import React, { FC, useEffect } from "react";
 import styles from './ChessBoard.module.css';
 import { ChessBoardCellsLayout } from "./ChessBoardCellsLayout";
@@ -8,11 +8,12 @@ import { useChessBoardInteractive } from "./useChessBoardInteractive";
 import { ChessBoardInteractiveLayout } from "./ChessBoardInteractiveLayout";
 import { ChangeMove, ChessBoardConfig } from "./models";
 import { ArrowLayout } from "./ArrowLayout";
+import { FigurePicker } from "./FigurePicker";
 
 type ChessBoardProps = {
     FEN: string;
     onChange: (moveData: MoveData) => void;
-    color: FigureColor;
+    onEndGame: (result: GameResult) => void;
     change?: ChangeMove;
     reversed?: boolean;
     config?: Partial<ChessBoardConfig>;
@@ -21,7 +22,8 @@ type ChessBoardProps = {
 export const ChessBoard: FC<ChessBoardProps> = (props) => {
     const { 
         FEN, 
-        onChange, 
+        onChange,
+        onEndGame,
         change, 
         reversed,
         config,
@@ -38,6 +40,8 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         arrowsCoords,
         startArrowCoord,
         boardConfig,
+        currentColor,
+        showFigurePicker,
 
         setActualState,
         selectClickFrom,
@@ -53,7 +57,8 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
         markCell,
         getHasCheckByCellPos,
         endRenderArrow,
-    } = useChessBoardInteractive({ onChange, config });
+        handleSelectFigurePicker
+    } = useChessBoardInteractive({ onChange, onEndGame, config });
 
     useEffect(() => {
         const { boardState, currentColor } = FENtoGameState(FEN);
@@ -73,7 +78,7 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
     return (
         <div className={styles.chessBoard}>
             <ChessBoardCellsLayout boardConfig={boardConfig} />
-            <ChessBoardFiguresLayout 
+            <ChessBoardFiguresLayout
                 initialState={initialState}
                 change={newMove}
                 reversed={reversed}
@@ -104,6 +109,16 @@ export const ChessBoard: FC<ChessBoardProps> = (props) => {
                 onGrabbing={handleGrabbing}
                 onRightClick={markCell}
             />
+            {showFigurePicker && (
+                <div className={styles.chessBoardFigurePicker}>
+                    <FigurePicker
+                        boardConfig={boardConfig}
+                        color={currentColor}
+                        forPawnTransform
+                        onSelect={handleSelectFigurePicker}
+                    />
+                </div>
+            )}
         </div>
     )
 }

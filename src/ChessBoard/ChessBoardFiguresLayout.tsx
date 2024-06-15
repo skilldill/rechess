@@ -24,7 +24,7 @@ export const ChessBoardFiguresLayout: FC<ChessBoardFiguresLayoutProps> = (props)
         if (!!change) {
             setActualState((prevState) => {
                 const updatedState = [...prevState];
-                const { move, attackedPos } = change;
+                const { move, attackedPos, transformTo } = change;
 
                 if (checkIsCastlingMove(move)) {
                     const castlingType = JSChessEngine.getCastlingType(move);
@@ -110,8 +110,14 @@ export const ChessBoardFiguresLayout: FC<ChessBoardFiguresLayoutProps> = (props)
                     figure.position![0] === from[0]
                     && figure.position![1] === from[1]
                 );
-
                 foundFigureByPositionFrom!.position! = move.to;
+
+                if (!!transformTo) {
+                    foundFigureByPositionFrom!.type = transformTo.type;
+                    foundFigureByPositionFrom!.color = transformTo.color;
+                    // console.log(updatedState);
+                    // return updatedState.filter(({ position }) => position![0] !== from[1] && position![1] !== from[0]);
+                }
 
                 return updatedState;
             });

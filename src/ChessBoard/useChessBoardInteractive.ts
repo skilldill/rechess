@@ -1,4 +1,4 @@
-import { Cell, CellPos, Figure, FigureColor, JSChessEngine, MoveData, stateToFEN } from "../JSChessEngine";
+import { Cell, CellPos, Figure, FigureColor, GameResult, JSChessEngine, MoveData, stateToFEN } from "../JSChessEngine";
 import { useEffect, useState } from "react"
 import { checkIsPossibleMove, checkPositionsHas, getChessBoardConfig, hasCheck } from "./utils";
 import { ArrowCoords, ChangeMove, ChessBoardConfig } from "./models";
@@ -7,10 +7,11 @@ import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 type UseChessBoardInteractiveProps = {
   config?: Partial<ChessBoardConfig>;
   onChange: (moveData: MoveData) => void;
+  onEndGame: (result: GameResult) => void;
 }
 
 export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) => {
-  const { onChange, config } = props;
+  const { config, onChange, onEndGame } = props;
 
   const [boardConfig, setBoardConfig] = useState(DEFAULT_CHESSBORD_CONFIG);
   const [initialState, setInitialState] = useState<Cell[][]>([]);
@@ -33,6 +34,10 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   const [startArrowCoord, setStartArrowCoord] = useState<CellPos>([-1, -1]);
   const [arrowsCoords, setArrowsCoords] = useState<ArrowCoords[]>([]);
 
+  // Используется при превращении пешки в фигуру
+  const [showFigurePicker, setShowFigurePicker] = useState(false);
+  const [targetPos, setTargetPos] = useState<CellPos>([-1, -1]);
+
   const clearFromPos = () => setFromPos([-1, -1]);
   const clearGrabbingPos = () => setGrabbingPos([-1, -1]);
   const clearPossibleMoves = () => setPossibleMoves([]);
@@ -45,6 +50,20 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
   useEffect(() => {
     setBoardConfig(getChessBoardConfig(config));
   }, []);
+
+  useEffect(() => {
+    if (linesWithCheck.length > 0) {
+      const gameResult = JSChessEngine.getGameResult(
+        actualState,
+        linesWithCheck,
+        currentColor!,
+        boardReversed
+      );
+
+      if (gameResult)
+        onEndGame(gameResult);
+    }
+  }, [actualState, linesWithCheck, boardReversed, currentColor])
 
   const cleanAllForFigure = () => {
     setHoldedFigure(undefined);
@@ -135,7 +154,7 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     );
 
     setLinesWithCheck(linesCheck);
-
+    
     // Если playetColor не задан, то
     // Доска работает в режиме анализа
     // Можно менять состояние внутри доски
@@ -148,8 +167,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
       figure.type === 'pawn' &&
       (to[1] === 0 || to[1] === actualState.length - 1)
     ) {
-      // setTargetPos(to);
-      // setShowFigurePicker(true);
+      setTargetPos(to);
+      setShowFigurePicker(true);
       return {};
     }
 
@@ -211,8 +230,8 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
       figure.type === 'pawn' &&
       (to[1] === 0 || to[1] === actualState.length - 1)
     ) {
-      // setTargetPos(to);
-      // setShowFigurePicker(true);
+      setTargetPos(to);
+      setShowFigurePicker(true);
       return {};
     }
 
@@ -362,6 +381,56 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     setStartArrowCoord([-1, -1]);
   }
 
+  // Обработка выбора превращения пешки
+  const handleSelectFigurePicker = (figure: Figure) => {
+    const startPos = fromPos[0] > -1 
+      ? fromPos
+      : clickedPos
+
+    const updatedCells = JSChessEngine.transformPawnToFigure(
+      actualState,
+      startPos,
+      targetPos,
+      figure
+    );
+
+    const moveData: MoveData = {
+      figure,
+      from: startPos,
+      to: targetPos,
+      type: 'transform',
+    };
+
+    onChange(moveData);
+    setActualState(updatedCells);
+    toggleCurrentColor();
+    setNewMove({ 
+      move: moveData, 
+      withTransition: false, 
+      transformTo: figure,
+    });
+
+    const linesWithCheck = JSChessEngine.getLinesWithCheck(
+      updatedCells, 
+      currentColor, 
+      boardReversed
+    );
+
+    setLinesWithCheck(linesWithCheck);
+
+    // handleEndGame(updatedCells, linesWithCheck);
+
+    clearGrabbingPos();
+    clearPossibleMoves();
+    clearMarkedCells();
+    setShowFigurePicker(false);
+    clearClickedPos();
+    setHoldedFigure(undefined);
+    setFromPos([-1, -1]);
+    setClickedPos([-1, -1]);
+    clearArrows();
+  }
+
   return {
     fromPos,
     newMove,
@@ -369,12 +438,14 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     markedCells,
     grabbingPos,
     actualState,
+    currentColor,
     arrowsCoords,
     initialState,
     holdedFigure,
     possibleMoves,
     linesWithCheck,
     startArrowCoord,
+    showFigurePicker,
 
     markCell,
     setNewMove,
@@ -391,5 +462,6 @@ export const useChessBoardInteractive = (props: UseChessBoardInteractiveProps) =
     startRenderArrow,
     reverseChessBoard,
     getHasCheckByCellPos,
+    handleSelectFigurePicker,
   }
 }

@@ -1,4 +1,4 @@
-import { Cell, CellPos, Figure, FigureColor, MoveData } from "../JSChessEngine";
+import { Cell, CellPos, Figure, FigureColor, FigureType, MoveData } from "../JSChessEngine";
 import { ChessBoardConfig, ChessPiecesMap } from "./models";
 import { DEFAULT_CHESSBORD_CONFIG } from "./constants";
 
@@ -138,10 +138,48 @@ export const getChessBoardConfig = (config: Partial<ChessBoardConfig> | undefine
     const buildedConfig: Record<string, string | number | ChessPiecesMap> = {};
 
     configKeyes.forEach((key) => {
-        buildedConfig[key as keyof ChessBoardConfig] = 
-            config[key as keyof ChessBoardConfig] 
+        buildedConfig[key as keyof ChessBoardConfig] =
+            config[key as keyof ChessBoardConfig]
             || DEFAULT_CHESSBORD_CONFIG[key as keyof ChessBoardConfig]
     });
 
     return buildedConfig as ChessBoardConfig;
 }
+
+/**
+ * Возвращает массив фигур по заданому цвету
+ * @param color цвет фигур
+ * @param forPawnTransform только фигуры для превращения пешки
+ */
+export const getFiguresByColor = (
+    color: FigureColor,
+    forPawnTransform = false
+): Figure[] => {
+    if (forPawnTransform) {
+        const figureNamesForPawn: FigureType[] = [
+            'queen',
+            'rook',
+            'bishop',
+            'knigts',
+        ];
+        return figureNamesForPawn.map((figureName) => ({
+            type: figureName,
+            color,
+            touched: true,
+        }));
+    }
+
+    const figureNames: FigureType[] = [
+        'pawn',
+        'knigts',
+        'bishop',
+        'rook',
+        'queen',
+        'king',
+    ];
+    return figureNames.map((figureName) => ({
+        type: figureName,
+        color,
+        touched: true,
+    }));
+};
